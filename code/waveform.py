@@ -84,4 +84,4 @@ class Sine:
 
     @staticmethod
     def equation_trigon():
-        return r'$\dfrac{2a}{\pi}\/\arcsin(\sin(2\pi\/f\/x - \dfrac{\pi}{2})) + C $'
+        return r'$a\/\sin(2\pi\/f\/x - \dfrac{\pi}{2})) + C $'

@@ -1,8 +1,10 @@
 import numpy as np
-from code.waveform import Triangle, Sawtooth, SquareWave, Sine
 
 
 # discrete integration where s is your signal as array and l is your first entry
+from waveform import Triangle, Sawtooth, SquareWave, Sine
+
+
 def running_sum(s, l):
     y = np.zeros(len(s))
     y[0] = s[0] + l

@@ -2,8 +2,8 @@ import matplotlib.pyplot as plt
 from matplotlib import pylab
 
 from matplotlib.widgets import RadioButtons, Slider, CheckButtons
-from code.tools import running_sum, normalize, current_fourier_wf, current_trigon_wf, current_equation
-from code.waveform import *
+from tools import current_fourier_wf, current_trigon_wf, normalize, running_sum, current_equation
+import numpy as np
 
 chunk_size = 3000
 x_plot = np.linspace(0, 2, chunk_size*2)

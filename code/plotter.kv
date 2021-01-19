@@ -1,0 +1,50 @@
+# Filename: plotter.kv
+
+<MainGrid>:
+    BoxLayout:
+        id: box
+        orientation: 'vertical'
+        padding: 0
+
+        BoxLayout:
+            id: plot
+            orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'horizontal'
+
+            ToggleButton:
+                id: sine_wf
+                text: 'Sine'
+                group: 'wf'
+                orientation: 'horizontal'
+                on_press: root.switch_wf('Sine')
+
+            ToggleButton:
+                id: saw_wf
+                text: 'Sawtooth'
+                group: 'wf'
+                orientation: 'horizontal'
+                on_press: root.switch_wf('Sawtooth')
+
+            ToggleButton:
+                id: tri_wf
+                text: 'Triangle'
+                group: 'wf'
+                orientation: 'horizontal'
+                on_press: root.switch_wf('Triangle')
+
+            ToggleButton:
+                id: square_wf
+                text: 'Square'
+                group: 'wf'
+                orientation: 'horizontal'
+                on_press: root.switch_wf('Square Wave')
+
+        Slider:
+            id: slider
+            min: 0
+            max: 100
+            step: 1
+            on_value: root.update_plot()
+            pos_hint: {'bottom':1}
