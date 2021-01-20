@@ -1,6 +1,9 @@
 # Filename: frem.kv
 #:import utils kivy.utils
 
+<ToggleButton>
+    allow_no_selection: False
+
 <MainGrid>:
     canvas.before:
         Color:
@@ -9,84 +12,214 @@
             pos: self.pos
             size: self.size
 
-    ScrollView:
-        do_scroll_x: False
-        do_scroll_y: True
 
+    BoxLayout:
+        spacing: 10
+        id: box
+        orientation: 'vertical'
+        padding: 10
+        size_hint: 1, 1
+
+        # modulation signal
         BoxLayout:
-            spacing: 10
-            id: box
+            id: modulation
             orientation: 'vertical'
-            padding: 10
-            size_hint: 1, 1
+            size_hint: 1, 0.18
 
-            # modulation signal
-            BoxLayout:
-                id: modulation
-                orientation: 'vertical'
-                size_hint: 1, 0.2
+        TabbedPanel:
+            id: panel
+            do_default_tab: False
+            size_hint: 1, 0.2
+            spacing: 10
+            background_color: (0,0,0,0.2)
 
-            # waveform selection
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint: 1, 0.05
+            TabbedPanelItem:
+                id: am
+                text: 'AM Signal'
+                #on_touch_up: root.current_tab = am.text
 
-                ToggleButton:
-                    id: saw_wf
-                    text: 'Sawtooth'
-                    group: 'wf'
-                    orientation: 'horizontal'
-                    on_press: root.switch_wf('Sawtooth')
+            TabbedPanelItem:
+                id: fm
+                text: 'FM Signal'
+                #on_touch_up: root.current_tab = fm.text
 
-                ToggleButton:
-                    id: tri_wf
-                    text: 'Triangle'
-                    group: 'wf'
-                    orientation: 'horizontal'
-                    on_press: root.switch_wf('Triangle')
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 1, 1
 
-                ToggleButton:
-                    id: square_wf
-                    text: 'Square'
-                    group: 'wf'
-                    orientation: 'horizontal'
-                    on_press: root.switch_wf('Square Wave')
+                    # waveform selection
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: 1, 0.2
+                        on_touch_up: root.update_plot()
+
+                        ToggleButton:
+                            id: saw_wf
+                            text: 'Sawtooth'
+                            group: 'wf'
+                            orientation: 'horizontal'
+                            on_press: root.wf_mod = 'Sawtooth'
+
+                        ToggleButton:
+                            id: tri_wf
+                            text: 'Triangle'
+                            group: 'wf'
+                            state: 'down'
+                            orientation: 'horizontal'
+                            on_press: root.wf_mod = 'Triangle'
+
+                        ToggleButton:
+                            id: square_wf
+                            text: 'Square'
+                            group: 'wf'
+                            orientation: 'horizontal'
+                            on_press: root.wf_mod = 'Square Wave'
+
+                    # parameter modulation signal
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            text: 'graph visible'
+
+                        Switch:
+                            id: mod_visible
+                            on_active: root.mod_active = mod_visible.active
+                            on_active: root.update_plot()
+                            active: True
+
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            id: integral
+                            text: 'calculate F(x)'
+
+                        Switch:
+                            id: int_active
+                            on_active: root.int_active = int_active.active
+                            on_active: root.update_plot()
 
 
-            # parameter modulation signal
-            BoxLayout:
-                size_hint: 1, 0.05
+                    BoxLayout:
+                        size_hint: 1, 0.6
+                        orientation: 'vertical'
 
-                Label:
-                    id: integral
-                    text: 'calculate F(x)'
+                        Label:
+                            text: 'Modulation Wave: ' + str(freq_mod.value) + ' hz'
 
-                Switch:
-                    id: checkbox
-                    on_active: root.calc_integral()
+                        Slider:
+                            id: freq_mod
+                            min: 0
+                            max: 100
+                            padding: 30
+                            value: 2
+                            step: 1
+                            on_value: root.update_plot()
 
-            BoxLayout:
-                size_hint: 1, 0.1
-                orientation: 'vertical'
+                        Label:
+                            text: 'Fourier Series iterations: ' + str(int(iter.value))
 
-                Label:
-                    text: 'Modulation Wave: ' + str(freq.value) + ' hz'
+                        Slider:
+                            id: iter
+                            min: 0
+                            max: 100
+                            padding: 30
+                            step: 1
+                            #on_value: root.update_plot()
 
-                Slider:
-                    id: freq
-                    min: 0
-                    max: 100
-                    padding: 30
-                    step: 1
-                    on_value: root.update_plot()
+            TabbedPanelItem:
+                id: car
+                text: 'Carrier \nSignal'
+                #on_touch_up: root.current_tab = car.text
 
-                Label:
-                    text: 'Fourier Series iterations: ' + str(int(iter.value))
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 1, 1
 
-                Slider:
-                    id: iter
-                    min: 0
-                    max: 100
-                    padding: 30
-                    step: 1
-                    on_value: root.update_plot()
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: 1, 0.2
+                        on_touch_up: root.update_plot()
+
+
+                        ToggleButton:
+                            id: sine_wf_carrier
+                            text: 'Sine'
+                            group: 'wf_carrier'
+                            state: 'down'
+                            orientation: 'horizontal'
+                            on_press: root.wf_car = 'Sine'
+
+                        ToggleButton:
+                            id: saw_wf_carrier
+                            text: 'Sawtooth'
+                            group: 'wf_carrier'
+                            orientation: 'horizontal'
+                            on_press: root.wf_car = 'Sawtooth'
+
+                        ToggleButton:
+                            id: tri_wf_carrier
+                            text: 'Triangle'
+                            group: 'wf_carrier'
+                            orientation: 'horizontal'
+                            on_press: root.wf_car = 'Triangle'
+
+                        ToggleButton:
+                            id: square_wf_carrier
+                            text: 'Square'
+                            group: 'wf_carrier'
+                            orientation: 'horizontal'
+                            on_press: root.wf_car = 'Square Wave'
+
+                    # === PARAMETER CARRIER SIGNAL ===
+
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            text: 'graph visible'
+
+                        Switch:
+                            id: car_visible
+                            on_active: root.car_active = car_visible.active
+                            on_active: root.update_plot()
+
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            id: dds
+                            text: 'apply modulation'
+
+                        Switch:
+                            id: asd
+                            #on_active: root.calc_integral()
+
+
+                    BoxLayout:
+                        size_hint: 1, 0.4
+                        orientation: 'vertical'
+
+                        Label:
+                            text: 'Carrier Wave: ' + str(freq_car.value) + ' hz'
+
+                        Slider:
+                            id: freq_car
+                            min: 0
+                            max: 100
+                            padding: 30
+                            value: 10
+                            step: 1
+                            on_value: root.update_plot()
+
+                        Label:
+                            text: 'Modulation Index: ' + str(int(mod_index.value))
+
+                        Slider:
+                            id: mod_index
+                            min: 0
+                            max: 500
+                            padding: 30
+                            step: 1
+                            on_value: root.update_plot()

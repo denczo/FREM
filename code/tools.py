@@ -52,9 +52,6 @@ def current_equation(label, title):
     elif label == 'Square Wave':
         return equation_type(SquareWave, title)
 
-def neon_style():
-    pass
-
 # colors = [
 #     '#08F7FE',  # teal/cyan
 #     '#FE53BB',  # pink
