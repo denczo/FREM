@@ -1,0 +1,92 @@
+# Filename: frem.kv
+#:import utils kivy.utils
+
+<MainGrid>:
+    canvas.before:
+        Color:
+            rgb: utils.get_color_from_hex('#212946')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    ScrollView:
+        do_scroll_x: False
+        do_scroll_y: True
+
+        BoxLayout:
+            spacing: 10
+            id: box
+            orientation: 'vertical'
+            padding: 10
+            size_hint: 1, 1
+
+            # modulation signal
+            BoxLayout:
+                id: modulation
+                orientation: 'vertical'
+                size_hint: 1, 0.2
+
+            # waveform selection
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1, 0.05
+
+                ToggleButton:
+                    id: saw_wf
+                    text: 'Sawtooth'
+                    group: 'wf'
+                    orientation: 'horizontal'
+                    on_press: root.switch_wf('Sawtooth')
+
+                ToggleButton:
+                    id: tri_wf
+                    text: 'Triangle'
+                    group: 'wf'
+                    orientation: 'horizontal'
+                    on_press: root.switch_wf('Triangle')
+
+                ToggleButton:
+                    id: square_wf
+                    text: 'Square'
+                    group: 'wf'
+                    orientation: 'horizontal'
+                    on_press: root.switch_wf('Square Wave')
+
+
+            # parameter modulation signal
+            BoxLayout:
+                size_hint: 1, 0.05
+
+                Label:
+                    id: integral
+                    text: 'calculate F(x)'
+
+                Switch:
+                    id: checkbox
+                    on_active: root.calc_integral()
+
+            BoxLayout:
+                size_hint: 1, 0.1
+                orientation: 'vertical'
+
+                Label:
+                    text: 'Modulation Wave: ' + str(freq.value) + ' hz'
+
+                Slider:
+                    id: freq
+                    min: 0
+                    max: 100
+                    padding: 30
+                    step: 1
+                    on_value: root.update_plot()
+
+                Label:
+                    text: 'Fourier Series iterations: ' + str(int(iter.value))
+
+                Slider:
+                    id: iter
+                    min: 0
+                    max: 100
+                    padding: 30
+                    step: 1
+                    on_value: root.update_plot()

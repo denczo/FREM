@@ -51,3 +51,13 @@ def current_equation(label, title):
         return equation_type(Sawtooth, title)
     elif label == 'Square Wave':
         return equation_type(SquareWave, title)
+
+def neon_style():
+    pass
+
+# colors = [
+#     '#08F7FE',  # teal/cyan
+#     '#FE53BB',  # pink
+#     '#F5D300',  # yellow
+#     '#00ff41',  # matrix green
+# ]
