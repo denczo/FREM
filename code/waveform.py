@@ -85,3 +85,4 @@ class Sine:
     @staticmethod
     def equation_trigon():
         return r'$a\/\sin(2\pi\/f\/x - \dfrac{\pi}{2})) + C $'
+

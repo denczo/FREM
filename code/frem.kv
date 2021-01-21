@@ -35,12 +35,12 @@
 
             TabbedPanelItem:
                 id: am
-                text: 'AM Signal'
+                text: 'Modulation \nSignal I'
                 #on_touch_up: root.current_tab = am.text
 
             TabbedPanelItem:
                 id: fm
-                text: 'FM Signal'
+                text: 'Modulation \nSignal II'
                 #on_touch_up: root.current_tab = fm.text
 
                 BoxLayout:
@@ -81,6 +81,9 @@
 
                         Label:
                             text: 'graph visible'
+                            text_size: self.size
+                            valign: "middle"
+                            padding_x: 20
 
                         Switch:
                             id: mod_visible
@@ -89,24 +92,73 @@
                             active: True
 
                     BoxLayout:
+                        size_hint: 0.9, 0.2
+
+                        BoxLayout:
+                            size_hint: 0.61, 1
+                            Label:
+                                text: 'modulation type'
+                                text_size: self.size
+                                valign: "middle"
+                                padding_x: 20
+
+                        BoxLayout:
+                            size_hint: 0.29, 0.8
+                            pos_hint: {'y': .1}
+
+
+                            ToggleButton:
+                                id: saw_wf
+                                text: 'AM'
+                                group: 'm_type'
+                                orientation: 'horizontal'
+                                on_press: root.wf_mod = 'Sawtooth'
+
+                            ToggleButton:
+                                id: saw_wf
+                                text: 'FM'
+                                group: 'm_type'
+                                state: 'down'
+                                orientation: 'horizontal'
+                                on_press: root.wf_mod = 'Sawtooth'
+
+
+                    BoxLayout:
                         size_hint: 1, 0.2
 
                         Label:
                             id: integral
                             text: 'calculate F(x)'
+                            text_size: self.size
+                            valign: "middle"
+                            padding_x: 20
 
                         Switch:
                             id: int_active
                             on_active: root.int_active = int_active.active
                             on_active: root.update_plot()
 
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            id: integral
+                            text: 'apply'
+                            text_size: self.size
+                            valign: "middle"
+                            padding_x: 20
+
+                        Switch:
+                            id: int_active
+                            on_active: root.int_active = int_active.active
+                            on_active: root.update_plot()
 
                     BoxLayout:
                         size_hint: 1, 0.6
                         orientation: 'vertical'
 
                         Label:
-                            text: 'Modulation Wave: ' + str(freq_mod.value) + ' hz'
+                            text: 'Frequency: ' + str(freq_mod.value) + ' hz'
 
                         Slider:
                             id: freq_mod
@@ -114,7 +166,7 @@
                             max: 100
                             padding: 30
                             value: 2
-                            step: 1
+                            step: 0.5
                             on_value: root.update_plot()
 
                         Label:

@@ -118,6 +118,14 @@ class MainGrid(BoxLayout):
     def current_tab(self, value):
         self._current_tab = value
 
+
+    def modulating_wave(self):
+
+        if 'AM':
+            pass
+
+
+
     def update_plot(self):
 
         self._current_tab = 'FM Signal'
@@ -145,7 +153,9 @@ class MainGrid(BoxLayout):
         mod_color = '#08F7FE'
         amp_color = '#FE53BB'
         car_color = '#00ff41'
+        symbol = 'f(x)'
         if self.int_active:
+            symbol = 'F(x)'
             self.formula = r'$\int$ ' + self.formula
             mod_color = '#F5D300'
 
@@ -160,9 +170,12 @@ class MainGrid(BoxLayout):
 
         if self._mod_active:
             self.plot_graph(self.ax, self.plot_x, self.mod_y, mod_color)
+            self.ax.annotate(symbol, xy=(0.02, 0.93), xycoords='axes fraction',
+                          fontsize=8, color=mod_color, bbox=dict(boxstyle="round", fc='black', ec='None', alpha=0.4))
 
         self.ax.tick_params(left=False, bottom=False, labelbottom=False, labelleft=False)
         self.ax.set_facecolor('#212946')
+
         self.ax.annotate(self.formula, xy=(0.5, -0.26), xycoords='axes fraction',
                          fontsize=9, color=mod_color, bbox=dict(boxstyle="round", fc='black', ec="None", alpha=0.2),
                          ha='center',
