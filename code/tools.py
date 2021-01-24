@@ -37,6 +37,10 @@ def current_trigon_wf(label, a, fm, x, c, lfo=0):
         return Sine.trigonometric(a, fm, x, c, lfo)
 
 
+def amp_modulation(amp, y):
+    return amp * y
+
+
 def equation_type(wf, title):
     if title == 'Fourier series':
         return wf.equation_fourier()
@@ -45,16 +49,13 @@ def equation_type(wf, title):
 
 
 def current_equation(label, title):
-    if label == 'Triangle':
+
+    if label == 'Sine':
+        return equation_type(Sine, title)
+    elif label == 'Triangle':
         return equation_type(Triangle, title)
     elif label == 'Sawtooth':
         return equation_type(Sawtooth, title)
     elif label == 'Square Wave':
         return equation_type(SquareWave, title)
 
-# colors = [
-#     '#08F7FE',  # teal/cyan
-#     '#FE53BB',  # pink
-#     '#F5D300',  # yellow
-#     '#00ff41',  # matrix green
-# ]

@@ -25,58 +25,62 @@ colors = [
 ]
 
 
-class MainGrid(BoxLayout):
-
-    def __init__(self, wf_amp='Sine', wf_mod='Triangle', wf_car='Sine'):
-        super(MainGrid, self).__init__()
-        self._wf_amp = wf_amp
-        self._wf_mod = wf_mod
-        self._wf_car = wf_car
-        self._int_active = False
-        self._amp_active = False
-        self._mod_active = True
-        self._car_active = False
-        self._current_tab = None
-        self.beta = 0.1
-
-        self.fig = plt.figure(facecolor='#212946')
-        self.ax = self.fig.add_subplot(111)
-        self.plot = FigureCanvasKivyAgg(self.fig)
-
-        self.chunk_size = 5000
-        self.amp_y = np.zeros(self.chunk_size)
-        self.mod_y = np.zeros(self.chunk_size)
-        self.car_y = np.zeros(self.chunk_size)
-
-        self.ids.modulation.add_widget(self.plot)
-        self.plot_x = np.linspace(0, 1, self.chunk_size)
-        self.plot_y = np.zeros(self.chunk_size)
+class CarrierWave:
+    def __init__(self, color, chunk_size=5000, waveform='Sine'):
+        self._waveform = waveform
+        self.chunk_size = chunk_size
+        self._graph_active = False
+        self._frequency = 1
+        self._x = np.linspace(0, 1, chunk_size)
+        self._y = 0
         self.formula = ''
-        self.update_plot()
+        self.render_wf()
+        self.render_equation()
+        self.color = color
 
     @property
-    def wf_amp(self):
-        return self._wf_amp
+    def waveform(self):
+        return self._waveform
 
-    @wf_amp.setter
-    def wf_amp(self, value):
-        self._wf_amp = value
-
-    @property
-    def wf_mod(self):
-        return self._wf_mod
-
-    @wf_mod.setter
-    def wf_mod(self, value):
-        self._wf_mod = value
+    @waveform.setter
+    def waveform(self, value):
+        self._waveform = value
 
     @property
-    def wf_car(self):
-        return self._wf_car
+    def graph_active(self):
+        return self._graph_active
 
-    @wf_car.setter
-    def wf_car(self, value):
-        self._wf_car = value
+    @graph_active.setter
+    def graph_active(self, value):
+        self._graph_active = value
+
+    @property
+    def frequency(self):
+        return self._frequency
+
+    @frequency.setter
+    def frequency(self, value):
+        self._frequency = value
+
+    @property
+    def y(self):
+        return self._y
+
+    def render_wf(self, m=0, c=0):
+        #print(isinstance(self, ModulationWave))
+        # label, a = amplitude, f = frequency, x = samples, c = constant, m = modulation wave
+        self._y = current_trigon_wf(self._waveform, 0.5, self.frequency, self._x, c, m)
+
+    def render_equation(self):
+        return current_equation(self._waveform, 'Trigonometric function')
+
+
+class ModulationWave(CarrierWave):
+    def __init__(self, color):
+        super().__init__(color)
+        self._int_active = False
+        self._mod_index = 0.1
+        self.graph_active = True
 
     @property
     def int_active(self):
@@ -87,28 +91,41 @@ class MainGrid(BoxLayout):
         self._int_active = value
 
     @property
-    def amp_active(self):
-        return self._amp_active
+    def mod_index(self):
+        return self._mod_index
 
-    @amp_active.setter
-    def amp_active(self, value):
-        self._amp_active = value
+    @mod_index.setter
+    def mod_index(self, value):
+        self._mod_index = value / self.frequency
 
-    @property
-    def mod_active(self):
-        return self._mod_active
+    def apply_modulation(self, status):
+        if status:
+            return self.render_wf()
+        else:
+            return 0
 
-    @mod_active.setter
-    def mod_active(self, value):
-        self._mod_active = value
 
-    @property
-    def car_active(self):
-        return self._car_active
+class MainGrid(BoxLayout):
 
-    @car_active.setter
-    def car_active(self, value):
-        self._car_active = value
+    def __init__(self, wf_amp='Sine', wf_mod='Triangle', wf_car='Sine'):
+        super(MainGrid, self).__init__()
+        self.mod_wave_1 = ModulationWave('#08F7FE')
+        self.mod_wave_2 = ModulationWave('#FE53BB')
+        self.carrier = CarrierWave('#00ff41')
+        self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
+
+        self._current_tab = 'WF_M1'
+
+        self.fig = plt.figure(facecolor='#212946')
+        self.ax = self.fig.add_subplot(111)
+        self.plot = FigureCanvasKivyAgg(self.fig)
+
+        self.chunk_size = 5000
+        self.ids.modulation.add_widget(self.plot)
+        self.plot_x = np.linspace(0, 1, self.chunk_size)
+        self.plot_y = np.zeros(self.chunk_size)
+        self.formula = ''
+        self.update_plot()
 
     @property
     def current_tab(self):
@@ -118,60 +135,59 @@ class MainGrid(BoxLayout):
     def current_tab(self, value):
         self._current_tab = value
 
-
-    def modulating_wave(self):
-
-        if 'AM':
-            pass
-
-
+    def update_equation(self):
+        if self._current_tab == 'WF_M1':
+            self.formula = self.mod_wave_1.render_equation()
+        elif self._current_tab == 'WF_M2':
+            self.formula = self.mod_wave_2.render_equation()
+        elif self._current_tab == 'WF_C':
+            self.formula = self.carrier.render_equation()
 
     def update_plot(self):
 
-        self._current_tab = 'FM Signal'
+        plt.setp(self.ax.spines.values(), linewidth=3, color='grey', alpha=0.2)
+        self.ax.cla()
 
-        if self._current_tab == 'AM Signal':
-            pass
-        elif self._current_tab == 'FM Signal':
-            self.formula = current_equation(self.wf_mod, 'Trigonometric function')
-        elif self._current_tab == 'Carrier \nSignal':
-            self.formula = current_equation(self.wf_car, 'Trigonometric function')
+        self.update_equation()
 
         mod_wave = 0
+        for i in range(len(self.waveforms)):
+            wf = self.waveforms[i]
+            wf_y = wf.y
+            if isinstance(wf, ModulationWave):
+                if wf.int_active:
+                    # constant c need to be 0 for integral
+                    wf.render_wf(m=mod_wave, c=0)
+                    wf_y = wf.y
+                    wf_y = running_sum(wf_y, 0)
+                    wf_y = normalize(wf_y)
+                else:
+                    wf.render_wf(0, c=0.5)
+                    wf_y = wf.y
+                mod_wave = wf_y * wf.mod_index
+            else:
+                wf.render_wf(m=mod_wave, c=0.5)
 
-        if self._int_active:
-            # constant c need to be 0 for integral
-            self.mod_y = current_trigon_wf(self.wf_mod, 0.5, self.ids.freq_mod.value, self.plot_x, 0)
-            self.mod_y = running_sum(self.mod_y, 0)
-            self.mod_y = normalize(self.mod_y)
-            mod_wave = self.mod_y * (self.ids.mod_index.value / self.ids.freq_car.value)
-        else:
-            self.mod_y = current_trigon_wf(self.wf_mod, 0.5, self.ids.freq_mod.value, self.plot_x, 0.5)
+            if wf.graph_active:
+                self.plot_graph(self.ax, self.plot_x, wf_y, wf.color)
 
-        self.car_y = current_trigon_wf(self.wf_car, 0.5, self.ids.freq_car.value, self.plot_x, 0.5, mod_wave)
 
         mod_color = '#08F7FE'
         amp_color = '#FE53BB'
         car_color = '#00ff41'
         symbol = 'f(x)'
-        if self.int_active:
-            symbol = 'F(x)'
-            self.formula = r'$\int$ ' + self.formula
-            mod_color = '#F5D300'
+        # if self.int_active:
+        #     symbol = 'F(x)'
+        #     self.formula = r'$\int$ ' + self.formula
+        #     mod_color = '#F5D300'
 
-        plt.setp(self.ax.spines.values(), linewidth=3, color='grey', alpha=0.2)
-        self.ax.cla()
-
-        if self._amp_active:
-            pass
-
-        if self._car_active:
-            self.plot_graph(self.ax, self.plot_x, self.car_y, car_color)
-
-        if self._mod_active:
-            self.plot_graph(self.ax, self.plot_x, self.mod_y, mod_color)
-            self.ax.annotate(symbol, xy=(0.02, 0.93), xycoords='axes fraction',
-                          fontsize=8, color=mod_color, bbox=dict(boxstyle="round", fc='black', ec='None', alpha=0.4))
+        # if self._car_active:
+        #     self.plot_graph(self.ax, self.plot_x, self.car_y, car_color)
+        #
+        # if self._mod_active:
+        #     self.plot_graph(self.ax, self.plot_x, self.mod_y, mod_color)
+        #     self.ax.annotate(symbol, xy=(0.02, 0.93), xycoords='axes fraction',
+        #                      fontsize=8, color=mod_color, bbox=dict(boxstyle="round", fc='black', ec='None', alpha=0.4))
 
         self.ax.tick_params(left=False, bottom=False, labelbottom=False, labelleft=False)
         self.ax.set_facecolor('#212946')
