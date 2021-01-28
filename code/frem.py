@@ -200,7 +200,9 @@ class MainGrid(BoxLayout):
                 self.plot_graph(self.ax, self.plot_x, wf_y, wf_carrier.color)
                 #self.ax.annotate(wf_carrier.symbol, xy=(0.02, 0.93), xycoords='axes fraction', fontsize=8, color='#F5D300', bbox=dict(boxstyle="round", fc='black', ec='None', alpha=0.4))
 
-            wf_mod = wf_carrier.y
+            if isinstance(wf_carrier, ModulationWave):
+                print('TEST')
+                wf_mod = wf_carrier.y * wf_carrier.mod_index
 
         # if self.int_active:
         #     symbol = 'F(x)'
