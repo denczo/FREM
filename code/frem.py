@@ -39,6 +39,10 @@ class CarrierWave:
         self.equation = ''
         self.color = color
         self.x = np.linspace(0, 1, chunk_size)
+
+        def create_samples(self, start, end):
+            return np.arange(start, end + self.fade_seq) / self.rate
+
         self.y = 0
         self.formula = ''
         self.symbol = 'f(x)'
@@ -105,6 +109,9 @@ class AudioMaker:
         self.stream = self.settings(1, self.rate, 1, self.chunk_size)
         self.stream.start_stream()
 
+    def create_samples(self, start, end):
+        return np.arange(start, end) / self.rate
+
     def settings(self, channels, rate, output, chunk_size):
         return self.p.open(format=pyaudio.paFloat32,
                            channels=channels,
@@ -112,22 +119,23 @@ class AudioMaker:
                            output=output,
                            frames_per_buffer=chunk_size)
 
-    def render_audio(self, length):
+    def render_audio(self, chunk, length=0):
 
-        self.stream.write(self.chunk.astype(np.float32).tostring())
-        start = end
-        end += self.chunk_size
+        self.stream.write(chunk.astype(np.float32).tostring())
+        #start = end
+        #end += self.chunk_size
 
 
 class MainGrid(BoxLayout):
 
     def __init__(self):
         super(MainGrid, self).__init__()
-        chunk_size = 2000
+        chunk_size = 22050
         self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size)
         self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size)
         self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size)
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
+        self.audio = AudioMaker()
         self._current_tab = 'WF_M1'
 
         self.fig = plt.figure(facecolor='#212946')
@@ -146,7 +154,6 @@ class MainGrid(BoxLayout):
         self.lines = []
         self.init_plot()
         self.update_plot()
-
     @property
     def current_tab(self):
         return self._current_tab
@@ -201,7 +208,6 @@ class MainGrid(BoxLayout):
                 #self.ax.annotate(wf_carrier.symbol, xy=(0.02, 0.93), xycoords='axes fraction', fontsize=8, color='#F5D300', bbox=dict(boxstyle="round", fc='black', ec='None', alpha=0.4))
 
             if isinstance(wf_carrier, ModulationWave):
-                print('TEST')
                 wf_mod = wf_carrier.y * wf_carrier.mod_index
 
         # if self.int_active:
