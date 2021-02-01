@@ -6,18 +6,18 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
-import pyaudio
+#import pyaudio
 import numpy as np
 from kivy.clock import Clock
 
 
 from tools import *
 
-
-class FremApp(App):
+#FREM
+class MainApp(App):
 
     def build(self):
-        Clock.schedule_interval(lambda dt: print("FPS: ", Clock.get_fps()), 1)
+        #Clock.schedule_interval(lambda dt: print("FPS: ", Clock.get_fps()), 1)
         return MainGrid()
 
 
@@ -101,29 +101,29 @@ class ModulationWave(CarrierWave):
         self.render_wf()
 
 
-class AudioMaker:
-    def __init__(self, rate=44100, chunk_size=1024, gain=0.25):
-        self.rate = int(rate)
-        self.chunk_size = chunk_size
-        self.p = pyaudio.PyAudio()
-        self.stream = self.settings(1, self.rate, 1, self.chunk_size)
-        self.stream.start_stream()
-
-    def create_samples(self, start, end):
-        return np.arange(start, end) / self.rate
-
-    def settings(self, channels, rate, output, chunk_size):
-        return self.p.open(format=pyaudio.paFloat32,
-                           channels=channels,
-                           rate=rate,
-                           output=output,
-                           frames_per_buffer=chunk_size)
-
-    def render_audio(self, chunk, length=0):
-
-        self.stream.write(chunk.astype(np.float32).tostring())
-        #start = end
-        #end += self.chunk_size
+# class AudioMaker:
+#     def __init__(self, rate=44100, chunk_size=1024, gain=0.25):
+#         self.rate = int(rate)
+#         self.chunk_size = chunk_size
+#         self.p = pyaudio.PyAudio()
+#         self.stream = self.settings(1, self.rate, 1, self.chunk_size)
+#         self.stream.start_stream()
+#
+#     def create_samples(self, start, end):
+#         return np.arange(start, end) / self.rate
+#
+#     def settings(self, channels, rate, output, chunk_size):
+#         return self.p.open(format=pyaudio.paFloat32,
+#                            channels=channels,
+#                            rate=rate,
+#                            output=output,
+#                            frames_per_buffer=chunk_size)
+#
+#     def render_audio(self, chunk, length=0):
+#
+#         self.stream.write(chunk.astype(np.float32).tobytes())
+#         #start = end
+#         #end += self.chunk_size
 
 
 class MainGrid(BoxLayout):
@@ -135,8 +135,9 @@ class MainGrid(BoxLayout):
         self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size)
         self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size)
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
-        self.audio = AudioMaker()
+        #self.audio = AudioMaker()
         self._current_tab = 'WF_M1'
+        self.old_tab = ''
 
         self.fig = plt.figure(facecolor='#212946')
         self.ax = self.fig.add_subplot(111)
@@ -173,7 +174,7 @@ class MainGrid(BoxLayout):
             self.formula = self.carrier.equation
             self.ann_color = self.carrier.color
 
-        if self.formula != self.old_formula:
+        if self.formula != self.old_formula or self.current_tab != self.old_tab:
             if self.ann is not None:
                 self.ann.remove()
             self.ann = self.ax.annotate(self.formula, xy=(0.5, -0.26), xycoords='axes fraction',
@@ -181,6 +182,7 @@ class MainGrid(BoxLayout):
                              ha='center',
                              va='center')
             self.old_formula = self.formula
+            self.old_tab = self.current_tab
             self.plot.draw()
 
     def init_plot(self):
@@ -202,8 +204,8 @@ class MainGrid(BoxLayout):
             wf_carrier.change_mod_wave(wf_mod)
             wf_y = wf_carrier.y
 
+            self.update_equation()
             if wf_carrier.graph_active:
-                self.update_equation()
                 self.plot_graph(self.ax, self.plot_x, wf_y, wf_carrier.color)
                 #self.ax.annotate(wf_carrier.symbol, xy=(0.02, 0.93), xycoords='axes fraction', fontsize=8, color='#F5D300', bbox=dict(boxstyle="round", fc='black', ec='None', alpha=0.4))
 
@@ -226,4 +228,4 @@ class MainGrid(BoxLayout):
         self.lines.append(ln)
 
 
-FremApp().run()
+MainApp().run()
