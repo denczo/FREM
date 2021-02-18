@@ -1,45 +1,65 @@
-import matplotlib.pyplot as plt
+from math import sin
+from kivy.garden.graph import Graph, Plot, MeshLinePlot, SmoothLinePlot, MeshStemPlot, LinePlot
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.clock import Clock
 import numpy as np
 
-x = np.linspace(0, 2 * np.pi, 100)
 
-fig, ax = plt.subplots()
+class Color:
+    def __init__(self, r, g, b, a):
+        self.r = r
+        self.g = g
+        self.b = b
+        self.a = a
 
-# animated=True tells matplotlib to only draw the artist when we
-# explicitly request it
-(ln,) = ax.plot(x, np.sin(x), animated=True)
 
-# make sure the window is raised, but the script keeps going
-plt.show(block=False)
+class TestApp(App):
 
-# stop to admire our empty window axes and ensure it is rendered at
-# least once.
-#
-# We need to fully draw the figure at its final size on the screen
-# before we continue on so that :
-#  a) we have the correctly sized and drawn background to grab
-#  b) we have a cached renderer so that ``ax.draw_artist`` works
-# so we spin the event loop to let the backend process any pending operations
-plt.pause(0.1)
+    def build(self):
+        # Clock.schedule_interval(lambda dt: print("FPS: ", Clock.get_fps()), 1)
+        return MainGrid()
 
-# get copy of entire figure (everything inside fig.bbox) sans animated artist
-bg = fig.canvas.copy_from_bbox(fig.bbox)
-# draw the animated artist, this uses a cached renderer
-ax.draw_artist(ln)
-# show the result to the screen, this pushes the updated RGBA buffer from the
-# renderer to the GUI framework so you can see it
-fig.canvas.blit(fig.bbox)
 
-for j in range(1000):
-    # reset the background back in the canvas state, screen unchanged
-    fig.canvas.restore_region(bg)
-    # update the artist, neither the canvas state nor the screen have changed
-    ln.set_ydata(np.sin(x + (j / 100) * np.pi))
-    # re-render the artist, updating the canvas state, but not the screen
-    ax.draw_artist(ln)
-    # copy the image to the GUI state, but screen might not changed yet
-    fig.canvas.blit(fig.bbox)
-    # flush any pending GUI events, re-painting the screen if needed
-    fig.canvas.flush_events()
-    # you can put a pause in if you want to slow things down
-    # plt.pause(.1)
+class MainGrid(BoxLayout):
+
+    def __init__(self):
+        super(MainGrid, self).__init__()
+        self.graph = Graph(padding=10,
+                           x_grid=True, y_grid=True, xmin=-0.2, xmax=0.2, ymin=-1, ymax=1, draw_border=False)
+        # self.plot = SmoothLinePlot(color=[1, 1, 1, 1])
+
+        # self.graph.add_plot(self.plot)
+        self.plot_x = np.linspace(0, 1, 1024)
+        f = 200
+        self.plot_y = 0.5 * np.sin(2 * np.pi * f * self.plot_x)
+        self.draw_plot(self.plot_x, self.plot_y)
+
+        # self.plot.points = [(self.plot_x[i], self.plot_y[i]) for i in range(1024)]
+        # self.plot.points = [(x, sin(x / 10.)) for x in range(0, 101)]
+        self.add_widget(self.graph)
+
+    def lerp(self, c1, c2, t):
+        r = c1.r + (c2.r - c1.r) * t
+        g = c1.g + (c2.g - c1.g) * t
+        b = c1.b + (c2.b - c1.b) * t
+        a = c1.a + (c2.a - c1.a) * t
+        return Color(r, g, b, a)
+
+    def draw_plot(self, x, y):
+        end = 4
+        cyan = Color(0, 1, 1, 1)
+        blue = Color(0, 0, 1, 0.8)
+
+        for i in range(1, end):
+            color = self.lerp(blue, cyan, i/end)
+            color_values = [color.r, color.g, color.b, color.a]
+            print(color_values)
+            width = 4/i
+            plot = LinePlot(line_width=width, color=color_values)
+            plot.points = [(x[i], y[i]) for i in range(1024)]
+            # plots.append(plot)
+            self.graph.add_plot(plot)
+
+
+TestApp().run()

@@ -1,23 +1,22 @@
 import os
-#os.environ["KIVY_NO_CONSOLELOG"] = "1"
+# os.environ["KIVY_NO_CONSOLELOG"] = "1"
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-from kivy.garden.matplotlib.backend_kivyagg import FigureCanvasKivyAgg
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
-#import pyaudio
+from kivy.garden.graph import Graph, LinePlot
+import pyaudio
 import numpy as np
 from kivy.clock import Clock
-
+from scipy.io import wavfile
 
 from tools import *
 
-#FREM
+
+# FREM
 class MainApp(App):
 
     def build(self):
-        #Clock.schedule_interval(lambda dt: print("FPS: ", Clock.get_fps()), 1)
+        # Clock.schedule_interval(lambda dt: print("FPS: ", Clock.get_fps()), 1)
         return MainGrid()
 
 
@@ -39,15 +38,19 @@ class CarrierWave:
         self.equation = ''
         self.color = color
         self.x = np.linspace(0, 1, chunk_size)
-
-        def create_samples(self, start, end):
-            return np.arange(start, end + self.fade_seq) / self.rate
+        self.init_plot([0,1,1,1])
 
         self.y = 0
         self.formula = ''
         self.symbol = 'f(x)'
         self.render_wf()
         self.render_equation()
+
+    def init_plot(self, color):
+        self.plot = []
+        for i in range(1,4):
+            width = 3/i
+            self.plot.append(LinePlot(line_width=width, color=color))
 
     def change_waveform(self, wf):
         self.waveform = wf
@@ -101,60 +104,68 @@ class ModulationWave(CarrierWave):
         self.render_wf()
 
 
-# class AudioMaker:
-#     def __init__(self, rate=44100, chunk_size=1024, gain=0.25):
-#         self.rate = int(rate)
-#         self.chunk_size = chunk_size
-#         self.p = pyaudio.PyAudio()
-#         self.stream = self.settings(1, self.rate, 1, self.chunk_size)
-#         self.stream.start_stream()
-#
-#     def create_samples(self, start, end):
-#         return np.arange(start, end) / self.rate
-#
-#     def settings(self, channels, rate, output, chunk_size):
-#         return self.p.open(format=pyaudio.paFloat32,
-#                            channels=channels,
-#                            rate=rate,
-#                            output=output,
-#                            frames_per_buffer=chunk_size)
-#
-#     def render_audio(self, chunk, length=0):
-#
-#         self.stream.write(chunk.astype(np.float32).tobytes())
-#         #start = end
-#         #end += self.chunk_size
+class AudioMaker:
+    def __init__(self, rate=44100, chunk_size=1024, gain=0.25):
+        self.rate = int(rate)
+        self.chunk_size = chunk_size
+        self.p = pyaudio.PyAudio()
+        self.stream = self.settings(1, self.rate, 1, self.chunk_size)
+        self.stream.start_stream()
+
+    def create_samples(self, start, end):
+        return np.arange(start, end) / self.rate
+
+    def settings(self, channels, rate, output, chunk_size):
+        return self.p.open(format=pyaudio.paFloat32,
+                           channels=channels,
+                           rate=rate,
+                           output=output,
+                           frames_per_buffer=chunk_size)
+
+    def render_audio(self, chunk, length=0):
+        self.stream.write(chunk.astype(np.float32).tobytes())
+        wavfile.write('recorded.wav', 44100, chunk)
+        # start = end
+        # end += self.chunk_size
 
 
 class MainGrid(BoxLayout):
 
     def __init__(self):
         super(MainGrid, self).__init__()
-        chunk_size = 22050
+        chunk_size = 1024
         self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size)
         self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size)
         self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size)
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
-        #self.audio = AudioMaker()
+        self.audio = AudioMaker()
         self._current_tab = 'WF_M1'
         self.old_tab = ''
 
-        self.fig = plt.figure(facecolor='#212946')
-        self.ax = self.fig.add_subplot(111)
-        self.ann = None
-        self.ann_color = None
-        self.plot = FigureCanvasKivyAgg(self.fig)
-        self.plot_buffer = []
+        # self.fig = plt.figure(facecolor='#212946')
+        # self.plot_buffer = []
+
+        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=275,
+                           border_color=[0, 1, 1, 1], tick_color=[0,1,1,0.5],
+                           x_grid=True, y_grid=True, xmin=-50, xmax=1050, ymin=-0.05, ymax=1.05, draw_border=True)
 
         self.chunk_size = chunk_size
-        self.ids.modulation.add_widget(self.plot)
         self.plot_x = np.linspace(0, 1, self.chunk_size)
         self.plot_y = np.zeros(self.chunk_size)
+        # self.plot = [LinePlot(line_width=3, color=[0, 0.5, 1, 0.8]), LinePlot(line_width=1, color=[0, 1, 1, 1]),
+        #              LinePlot(line_width=1, color=[0, 1, 1, 1])]
+        # self.plot.points = [(i, self.plot_y[i]) for i in range(chunk_size)]
+
+        self.graph.add_plot(self.carrier.plot[0])
+        self.graph.add_plot(self.mod_wave_1.plot[0])
+        self.graph.add_plot(self.mod_wave_2.plot[0])
+
+        self.ids.modulation.add_widget(self.graph)
         self.formula = ''
         self.old_formula = ''
         self.lines = []
-        self.init_plot()
         self.update_plot()
+
     @property
     def current_tab(self):
         return self._current_tab
@@ -162,6 +173,14 @@ class MainGrid(BoxLayout):
     @current_tab.setter
     def current_tab(self, value):
         self._current_tab = value
+
+    @staticmethod
+    def lerp(c1, c2, t):
+        r = c1.r + (c2.r - c1.r) * t
+        g = c1.g + (c2.g - c1.g) * t
+        b = c1.b + (c2.b - c1.b) * t
+        a = c1.a + (c2.a - c1.a) * t
+        return Color(r, g, b, a)
 
     def update_equation(self):
         if self._current_tab == 'WF_M1':
@@ -178,9 +197,10 @@ class MainGrid(BoxLayout):
             if self.ann is not None:
                 self.ann.remove()
             self.ann = self.ax.annotate(self.formula, xy=(0.5, -0.26), xycoords='axes fraction',
-                             fontsize=9, color=self.ann_color, bbox=dict(boxstyle="round", fc='black', ec="None", alpha=0.2),
-                             ha='center',
-                             va='center')
+                                        fontsize=9, color=self.ann_color,
+                                        bbox=dict(boxstyle="round", fc='black', ec="None", alpha=0.2),
+                                        ha='center',
+                                        va='center')
             self.old_formula = self.formula
             self.old_tab = self.current_tab
             self.plot.draw()
@@ -194,21 +214,20 @@ class MainGrid(BoxLayout):
 
     def update_plot(self):
 
-        #self.ax.cla()
-        for ln in self.lines:
-            ln.remove()
-        self.lines.clear()
         wf_mod = 0
         for i in range(len(self.waveforms)):
             wf_carrier = self.waveforms[i]
             wf_carrier.change_mod_wave(wf_mod)
             wf_y = wf_carrier.y
 
-            self.update_equation()
+            self.graph.remove_plot( wf_carrier.plot[0])
+            # self.update_equation()
             if wf_carrier.graph_active:
-                self.plot_graph(self.ax, self.plot_x, wf_y, wf_carrier.color)
-                #self.ax.annotate(wf_carrier.symbol, xy=(0.02, 0.93), xycoords='axes fraction', fontsize=8, color='#F5D300', bbox=dict(boxstyle="round", fc='black', ec='None', alpha=0.4))
-
+                wf_carrier.plot[0].points = [(i, wf_y[i]) for i in range(self.chunk_size)]
+                #self.plot_graph(None, self.plot_x, wf_y, None)
+                # self.plot_graph(self.ax, self.plot_x, wf_y, wf_carrier.color)
+                self.graph.add_plot(wf_carrier.plot[0])
+                pass
             if isinstance(wf_carrier, ModulationWave):
                 wf_mod = wf_carrier.y * wf_carrier.mod_index
 
@@ -217,15 +236,11 @@ class MainGrid(BoxLayout):
         #     self.formula = r'$\int$ ' + self.formula
         #     mod_color = '#F5D300'
 
-        self.plot.draw()
-
     def plot_graph(self, ax, x, y, color):
 
-        ln, = ax.plot(x, y, linewidth=1.5, alpha=1, color=color)
-        self.lines.append(ln)
-        # glow effect
-        ln, = ax.plot(x, y, linewidth=6, alpha=0.1, color=color)
-        self.lines.append(ln)
-
+        self.carrier.plot[0].points = [(i, y[i]) for i in range(self.chunk_size)]
+        #self.plot[1].points = [(i, y[i]) for i in range(self.chunk_size)]
+        #self.plot[2].points = [(i, y[i]) for i in range(self.chunk_size)]
+        pass
 
 MainApp().run()

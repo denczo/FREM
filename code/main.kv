@@ -24,14 +24,15 @@
         spacing: 10
         id: box
         orientation: 'vertical'
-        padding: 10
+        padding: 5
         size_hint: 1, 1
 
         # modulation signal
         BoxLayout:
             id: modulation
             orientation: 'vertical'
-            size_hint: 1, 0.18
+            padding:5
+            size_hint: 1, 0.2
         TabbedPanel:
             id: panel
             do_default_tab: False
@@ -46,7 +47,7 @@
             TabbedPanelItem:
                 id: wf_m1
                 text: 'WF I \n(Modulation)'
-                on_press: root.update_equation()
+                #on_press: root.update_equation()
                 on_press: root.current_tab = 'WF_M1'
 
                 BoxLayout:
@@ -188,7 +189,7 @@
             TabbedPanelItem:
                 id: wf_m2
                 text: 'WF II \n(Modulation)'
-                on_press: root.update_equation()
+                #on_press: root.update_equation()
                 on_press: root.current_tab = 'WF_M2'
 
                 BoxLayout:
@@ -344,7 +345,7 @@
             TabbedPanelItem:
                 id: car
                 text: 'WF III \n(Carrier)'
-                on_press: root.update_equation()
+                #on_press: root.update_equation()
                 on_press: root.current_tab = 'WF_C'
 
                 # waveforms
@@ -408,7 +409,7 @@
                         Slider:
                             id: freq_car
                             min: 0
-                            max: 100
+                            max: 500
                             padding: 30
                             value: 10
                             step: 1
@@ -422,4 +423,4 @@
                         id: play
                         text: 'PLAY'
                         orientation: 'horizontal'
-                        #on_press: root.audio.render_audio(root.carrier.y)
+                        on_press: root.audio.render_audio(root.carrier.y)

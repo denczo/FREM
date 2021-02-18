@@ -4,6 +4,7 @@ from matplotlib import pylab
 from matplotlib.widgets import RadioButtons, Slider, CheckButtons
 from tools import current_fourier_wf, current_trigon_wf, normalize, running_sum, current_equation
 import numpy as np
+from scipy.io import wavfile
 
 chunk_size = 3000
 x_plot = np.linspace(0, 2, chunk_size*2)
@@ -74,6 +75,7 @@ def update_wf_carrier(label, m=0):
     fc = slider_freq_carrier.val
     current_m_wf = current_trigon_wf(wf_carrier.value_selected, a, fc, x, c, m)
     plot_carrier_wave(current_m_wf)
+    wavfile.write('modulatedWave.wav', 44100, current_m_wf)
     if check_mod.get_status()[1]:
         add_modulation_wave(current_t_wf)
     plt.draw()
@@ -150,9 +152,9 @@ slider_it_pos = plt.axes([0.07, 0.62, 0.2, 0.02])
 slider_fm_pos = plt.axes([0.07, 0.57, 0.2, 0.02])
 slider_fc_pos = plt.axes([0.07, 0.18, 0.2, 0.02])
 slider_mod_pos = plt.axes([0.07, 0.13, 0.2, 0.02])
-slider_iterations = Slider(slider_it_pos, 'Iteration', 0, 100, valinit=10, valstep=5, valfmt="i = %d", closedmin=False)
+slider_iterations = Slider(slider_it_pos, 'Iteration', 1, 100, valinit=10, valstep=1, valfmt="i = %d", closedmin=False)
 slider_freq_mod = Slider(slider_fm_pos, 'Modulation', 0, 30, valinit=2, valstep=2, valfmt="%d hz", closedmin=False)
-slider_freq_carrier = Slider(slider_fc_pos, 'Carrier', 0, 60, valinit=30, valstep=10, valfmt="%d hz")
+slider_freq_carrier = Slider(slider_fc_pos, 'Carrier', 0, 60, valinit=30, valstep=5, valfmt="%d hz")
 slider_mod_index = Slider(slider_mod_pos, 'Mod. Index', 0.01, 100)
 
 wf_modulation.on_clicked(update_wf)
