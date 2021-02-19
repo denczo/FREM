@@ -8,6 +8,8 @@ import pyaudio
 import numpy as np
 from kivy.clock import Clock
 from scipy.io import wavfile
+from pylatexenc.latex2text import LatexNodes2Text
+from kivy.properties import ListProperty, StringProperty
 
 from tools import *
 
@@ -30,6 +32,7 @@ colors = [
 
 class CarrierWave:
     def __init__(self, color, chunk_size, waveform='Sine'):
+        self.plot = []
         self.chunk_size = chunk_size
         self.graph_active = False
         self.waveform = waveform
@@ -38,7 +41,7 @@ class CarrierWave:
         self.equation = ''
         self.color = color
         self.x = np.linspace(0, 1, chunk_size)
-        self.init_plot([0,1,1,1])
+        self.init_plot(hex_to_rgb_array(color))
 
         self.y = 0
         self.formula = ''
@@ -47,9 +50,11 @@ class CarrierWave:
         self.render_equation()
 
     def init_plot(self, color):
-        self.plot = []
-        for i in range(1,4):
-            width = 3/i
+        max_width = 3.5
+        end = 4
+        for i in range(1, end):
+            width = max_width / i
+            color[-1] = i / (end - 1)
             self.plot.append(LinePlot(line_width=width, color=color))
 
     def change_waveform(self, wf):
@@ -131,6 +136,9 @@ class AudioMaker:
 
 class MainGrid(BoxLayout):
 
+    equ_color = StringProperty('#08F7FE')
+    formula = StringProperty('')
+
     def __init__(self):
         super(MainGrid, self).__init__()
         chunk_size = 1024
@@ -141,24 +149,17 @@ class MainGrid(BoxLayout):
         self.audio = AudioMaker()
         self._current_tab = 'WF_M1'
         self.old_tab = ''
+        self.equ_color = self.mod_wave_1.color
 
         # self.fig = plt.figure(facecolor='#212946')
-        # self.plot_buffer = []
 
         self.graph = Graph(y_ticks_major=0.275, x_ticks_major=275,
-                           border_color=[0, 1, 1, 1], tick_color=[0,1,1,0.5],
+                           border_color=[0, 1, 1, 1], tick_color=[0, 1, 1, 0.5],
                            x_grid=True, y_grid=True, xmin=-50, xmax=1050, ymin=-0.05, ymax=1.05, draw_border=True)
 
         self.chunk_size = chunk_size
         self.plot_x = np.linspace(0, 1, self.chunk_size)
         self.plot_y = np.zeros(self.chunk_size)
-        # self.plot = [LinePlot(line_width=3, color=[0, 0.5, 1, 0.8]), LinePlot(line_width=1, color=[0, 1, 1, 1]),
-        #              LinePlot(line_width=1, color=[0, 1, 1, 1])]
-        # self.plot.points = [(i, self.plot_y[i]) for i in range(chunk_size)]
-
-        self.graph.add_plot(self.carrier.plot[0])
-        self.graph.add_plot(self.mod_wave_1.plot[0])
-        self.graph.add_plot(self.mod_wave_2.plot[0])
 
         self.ids.modulation.add_widget(self.graph)
         self.formula = ''
@@ -184,26 +185,19 @@ class MainGrid(BoxLayout):
 
     def update_equation(self):
         if self._current_tab == 'WF_M1':
-            self.formula = self.mod_wave_1.equation
-            self.ann_color = self.mod_wave_1.color
+            self.formula = LatexNodes2Text().latex_to_text(self.mod_wave_1.equation)
+            self.equ_color = self.mod_wave_1.color
         elif self._current_tab == 'WF_M2':
-            self.formula = self.mod_wave_2.equation
-            self.ann_color = self.mod_wave_2.color
+            self.formula = LatexNodes2Text().latex_to_text(self.mod_wave_2.equation)
+            self.equ_color = self.mod_wave_2.color
         elif self._current_tab == 'WF_C':
-            self.formula = self.carrier.equation
-            self.ann_color = self.carrier.color
+            self.formula = LatexNodes2Text().latex_to_text(self.carrier.equation)
+            self.equ_color = self.carrier.color
 
         if self.formula != self.old_formula or self.current_tab != self.old_tab:
-            if self.ann is not None:
-                self.ann.remove()
-            self.ann = self.ax.annotate(self.formula, xy=(0.5, -0.26), xycoords='axes fraction',
-                                        fontsize=9, color=self.ann_color,
-                                        bbox=dict(boxstyle="round", fc='black', ec="None", alpha=0.2),
-                                        ha='center',
-                                        va='center')
+
             self.old_formula = self.formula
             self.old_tab = self.current_tab
-            self.plot.draw()
 
     def init_plot(self):
         self.ax.tick_params(left=False, bottom=False, labelbottom=False, labelleft=False)
@@ -220,27 +214,19 @@ class MainGrid(BoxLayout):
             wf_carrier.change_mod_wave(wf_mod)
             wf_y = wf_carrier.y
 
-            self.graph.remove_plot( wf_carrier.plot[0])
-            # self.update_equation()
-            if wf_carrier.graph_active:
-                wf_carrier.plot[0].points = [(i, wf_y[i]) for i in range(self.chunk_size)]
-                #self.plot_graph(None, self.plot_x, wf_y, None)
-                # self.plot_graph(self.ax, self.plot_x, wf_y, wf_carrier.color)
-                self.graph.add_plot(wf_carrier.plot[0])
-                pass
+            self.update_equation()
+            for j in range(len(wf_carrier.plot)):
+                self.graph.remove_plot(wf_carrier.plot[j])
+                if wf_carrier.graph_active:
+                    wf_carrier.plot[j].points = [(i, wf_y[i]) for i in range(self.chunk_size)]
+                    self.graph.add_plot(wf_carrier.plot[j])
+            pass
             if isinstance(wf_carrier, ModulationWave):
                 wf_mod = wf_carrier.y * wf_carrier.mod_index
 
-        # if self.int_active:
-        #     symbol = 'F(x)'
-        #     self.formula = r'$\int$ ' + self.formula
-        #     mod_color = '#F5D300'
-
-    def plot_graph(self, ax, x, y, color):
-
-        self.carrier.plot[0].points = [(i, y[i]) for i in range(self.chunk_size)]
-        #self.plot[1].points = [(i, y[i]) for i in range(self.chunk_size)]
-        #self.plot[2].points = [(i, y[i]) for i in range(self.chunk_size)]
-        pass
+    # if self.int_active:
+    #     symbol = 'F(x)'
+    #     self.formula = r'$\int$ ' + self.formula
+    #     mod_color = '#F5D300'
 
 MainApp().run()

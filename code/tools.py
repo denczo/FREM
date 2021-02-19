@@ -1,6 +1,5 @@
 import numpy as np
 
-
 # discrete integration where s is your signal as array and l is your first entry
 from waveform import Triangle, Sawtooth, SquareWave, Sine
 
@@ -49,7 +48,6 @@ def equation_type(wf, title):
 
 
 def current_equation(label, title):
-
     if label == 'Sine':
         return equation_type(Sine, title)
     elif label == 'Triangle':
@@ -58,4 +56,17 @@ def current_equation(label, title):
         return equation_type(Sawtooth, title)
     elif label == 'Square Wave':
         return equation_type(SquareWave, title)
+
+
+def hex_to_rgb_array(hex_code):
+    start = 0
+    end = 2
+    if '#' in hex_code:
+        start = 1
+    end_r = start + end
+    r = int(hex_code[start:end_r], 16)/255
+    end_g = end_r + end
+    g = int(hex_code[end_r:end_g], 16)/255
+    b = int(hex_code[end_g:], 16)/255
+    return [r, g, b, 1]
 

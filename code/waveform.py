@@ -20,7 +20,7 @@ class Sawtooth:
 
     @staticmethod
     def equation_fourier():
-        return r'$\dfrac{1}{2}a + \dfrac{1}{\pi} \sum_{n=0}^i \dfrac{\sin(2\pi\/f\/n\/x)}{n}$'
+        return r'$\frac{1}{2}a + \frac{1}{\pi} \sum_{n=0}^i \frac{\sin(2\pi\/f\/n\/x)}{n}$'
 
     @staticmethod
     def equation_trigon():
@@ -44,7 +44,7 @@ class SquareWave:
 
     @staticmethod
     def equation_fourier():
-        return r'$\dfrac{1}{2}a + \dfrac{2}{\pi} \sum_{n=0}^i \dfrac{\sin(\dfrac{2}{\pi}\/f\/(2n - 1)\/x)}{2n - 1}$'
+        return r'$\frac{1}{2}a + \frac{2}{\pi} \sum_{n=0}^i \frac{\sin(\frac{2}{\pi}\/f\/(2n - 1)\/x)}{2n - 1}$'
 
     @staticmethod
     def equation_trigon():
@@ -68,11 +68,11 @@ class Triangle:
 
     @staticmethod
     def equation_fourier():
-        return r'$\dfrac{1}{2}a - \dfrac{4}{\pi^{2}} \sum_{n=0}^i \dfrac{\cos(2\pi\/f\/(2n - 1)\/x)}{(2n - 1)^{2}}$'
+        return r'$\frac{1}{2}a - \frac{4}{\pi^{2}} \sum_{n=0}^i \frac{\cos(2\pi\/f\/(2n - 1)\/x)}{(2n - 1)^{2}}$'
 
     @staticmethod
     def equation_trigon():
-        return r'$\dfrac{2a}{\pi}\/\arcsin(\sin(2\pi\/f\/x - \dfrac{\pi}{2})) + C $'
+        return r'$\frac{2a}{\pi}\/\arcsin(\sin(2\pi\/f\/x - \frac{\pi}{2})) + C $'
 
 
 class Sine:

@@ -4,6 +4,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.clock import Clock
 import numpy as np
+from pylatexenc.latex2text import LatexNodes2Text
 
 
 class Color:
@@ -62,4 +63,6 @@ class MainGrid(BoxLayout):
             self.graph.add_plot(plot)
 
 
-TestApp().run()
+#TestApp().run()
+
+print(LatexNodes2Text().latex_to_text(r'$\frac{1}{2}a + \frac{1}{\pi} \ \[\sum_{n=0}^i\]   \frac{\sin(2\pi\/f\/n\/x)}{n}$'))

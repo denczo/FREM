@@ -23,16 +23,30 @@
     BoxLayout:
         spacing: 10
         id: box
-        orientation: 'vertical'
         padding: 5
+        orientation: 'vertical'
         size_hint: 1, 1
+
 
         # modulation signal
         BoxLayout:
             id: modulation
+            padding: 10
             orientation: 'vertical'
-            padding:5
-            size_hint: 1, 0.2
+            size_hint: 1, 0.19
+            valign: 'middle'
+        BoxLayout
+            id: equation
+            padding: 10
+            orientation: 'vertical'
+            size_hint: 1, 0.01
+            valign: 'middle'
+
+            Label:
+                text: root.formula
+                color: utils.get_color_from_hex(root.equ_color)
+
+
         TabbedPanel:
             id: panel
             do_default_tab: False
