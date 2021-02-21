@@ -51,7 +51,7 @@ class CarrierWave:
 
     def init_plot(self, color):
         max_width = 3.5
-        end = 4
+        end = 2
         for i in range(1, end):
             width = max_width / i
             color[-1] = i / (end - 1)
