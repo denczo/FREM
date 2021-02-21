@@ -3,7 +3,7 @@ import os
 
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
-from kivy.garden.graph import Graph, LinePlot
+from kivy_garden.graph import Graph, LinePlot
 #import pyaudio
 import numpy as np
 #from kivy.clock import Clock
@@ -146,7 +146,7 @@ class MainGrid(BoxLayout):
         self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size)
         self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size)
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
-        self.audio = AudioMaker()
+        #self.audio = AudioMaker()
         self._current_tab = 'WF_M1'
         self.old_tab = ''
         self.equ_color = self.mod_wave_1.color
