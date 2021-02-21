@@ -4,10 +4,10 @@ import os
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.garden.graph import Graph, LinePlot
-import pyaudio
+#import pyaudio
 import numpy as np
-from kivy.clock import Clock
-from scipy.io import wavfile
+#from kivy.clock import Clock
+#from scipy.io import wavfile
 from pylatexenc.latex2text import LatexNodes2Text
 from kivy.properties import ListProperty, StringProperty
 
@@ -109,29 +109,29 @@ class ModulationWave(CarrierWave):
         self.render_wf()
 
 
-class AudioMaker:
-    def __init__(self, rate=44100, chunk_size=1024, gain=0.25):
-        self.rate = int(rate)
-        self.chunk_size = chunk_size
-        self.p = pyaudio.PyAudio()
-        self.stream = self.settings(1, self.rate, 1, self.chunk_size)
-        self.stream.start_stream()
-
-    def create_samples(self, start, end):
-        return np.arange(start, end) / self.rate
-
-    def settings(self, channels, rate, output, chunk_size):
-        return self.p.open(format=pyaudio.paFloat32,
-                           channels=channels,
-                           rate=rate,
-                           output=output,
-                           frames_per_buffer=chunk_size)
-
-    def render_audio(self, chunk, length=0):
-        self.stream.write(chunk.astype(np.float32).tobytes())
-        wavfile.write('recorded.wav', 44100, chunk)
-        # start = end
-        # end += self.chunk_size
+# class AudioMaker:
+#     def __init__(self, rate=44100, chunk_size=1024, gain=0.25):
+#         self.rate = int(rate)
+#         self.chunk_size = chunk_size
+#         self.p = pyaudio.PyAudio()
+#         self.stream = self.settings(1, self.rate, 1, self.chunk_size)
+#         self.stream.start_stream()
+#
+#     def create_samples(self, start, end):
+#         return np.arange(start, end) / self.rate
+#
+#     def settings(self, channels, rate, output, chunk_size):
+#         return self.p.open(format=pyaudio.paFloat32,
+#                            channels=channels,
+#                            rate=rate,
+#                            output=output,
+#                            frames_per_buffer=chunk_size)
+#
+#     def render_audio(self, chunk, length=0):
+#         self.stream.write(chunk.astype(np.float32).tobytes())
+#         wavfile.write('recorded.wav', 44100, chunk)
+#         # start = end
+#         # end += self.chunk_size
 
 
 class MainGrid(BoxLayout):
