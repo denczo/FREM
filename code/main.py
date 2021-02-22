@@ -4,7 +4,6 @@ import os
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy_garden.graph import Graph, LinePlot
-#import pyaudio
 import numpy as np
 #from kivy.clock import Clock
 #from scipy.io import wavfile
@@ -108,32 +107,6 @@ class ModulationWave(CarrierWave):
         self.mod_index = mi / self.frequency
         self.render_wf()
 
-
-# class AudioMaker:
-#     def __init__(self, rate=44100, chunk_size=1024, gain=0.25):
-#         self.rate = int(rate)
-#         self.chunk_size = chunk_size
-#         self.p = pyaudio.PyAudio()
-#         self.stream = self.settings(1, self.rate, 1, self.chunk_size)
-#         self.stream.start_stream()
-#
-#     def create_samples(self, start, end):
-#         return np.arange(start, end) / self.rate
-#
-#     def settings(self, channels, rate, output, chunk_size):
-#         return self.p.open(format=pyaudio.paFloat32,
-#                            channels=channels,
-#                            rate=rate,
-#                            output=output,
-#                            frames_per_buffer=chunk_size)
-#
-#     def render_audio(self, chunk, length=0):
-#         self.stream.write(chunk.astype(np.float32).tobytes())
-#         wavfile.write('recorded.wav', 44100, chunk)
-#         # start = end
-#         # end += self.chunk_size
-
-
 class MainGrid(BoxLayout):
 
     equ_color = StringProperty('#08F7FE')
@@ -146,7 +119,6 @@ class MainGrid(BoxLayout):
         self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size)
         self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size)
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
-        #self.audio = AudioMaker()
         self._current_tab = 'WF_M1'
         self.old_tab = ''
         self.equ_color = self.mod_wave_1.color
