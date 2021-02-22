@@ -24,7 +24,7 @@ class Sawtooth:
 
     @staticmethod
     def equation_trigon():
-        return r'$\dfrac{-2a}{\pi} + \dfrac{1}{\pi} \arctan(\dfrac{1}{\tan(2\pi \dfrac{f}{2} x)}) + C $'
+        return r'$-2a/\pi + 1/\pi \ \arctan(1/(\tan(2\pi f/2 x))) + C$'
 
 
 class SquareWave:
@@ -48,7 +48,7 @@ class SquareWave:
 
     @staticmethod
     def equation_trigon():
-        return r'$a\/\/ \mathrm{\mathsf{sign}}(\sin(2\pi\/f\/x)) + C $'
+        return r'$a sign(\sin(2\pi f x)) + C $'
 
 
 class Triangle:
@@ -72,7 +72,7 @@ class Triangle:
 
     @staticmethod
     def equation_trigon():
-        return r'$\frac{2a}{\pi}\/\arcsin(\sin(2\pi\/f\/x - \frac{\pi}{2})) + C $'
+        return r'$2a/\pi \ \arcsin(\sin(2\pi f x - \pi/2)) + C$'
 
 
 class Sine:
@@ -84,5 +84,5 @@ class Sine:
 
     @staticmethod
     def equation_trigon():
-        return r'$a\/\sin(2\pi\/f\/x - \dfrac{\pi}{2})) + C $'
+        return r'$a \sin(2\pi f x - \pi/2) + C$'
 

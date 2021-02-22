@@ -5,10 +5,10 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy_garden.graph import Graph, LinePlot
 import numpy as np
-#from kivy.clock import Clock
-#from scipy.io import wavfile
+# from kivy.clock import Clock
+# from scipy.io import wavfile
 from pylatexenc.latex2text import LatexNodes2Text
-from kivy.properties import ListProperty, StringProperty
+from kivy.properties import ListProperty, StringProperty, BooleanProperty, NumericProperty, ObjectProperty
 
 from tools import *
 
@@ -30,12 +30,13 @@ colors = [
 
 
 class CarrierWave:
-    def __init__(self, color, chunk_size, waveform='Sine'):
+
+    def __init__(self, color, chunk_size, waveform='Sine', frequency=1):
         self.plot = []
         self.chunk_size = chunk_size
         self.graph_active = False
         self.waveform = waveform
-        self.frequency = 1
+        self.frequency = frequency
         self.mod_wave = 0
         self.equation = ''
         self.color = color
@@ -49,7 +50,7 @@ class CarrierWave:
         self.render_equation()
 
     def init_plot(self, color):
-        max_width = 3.5
+        max_width = 2
         end = 2
         for i in range(1, end):
             width = max_width / i
@@ -78,9 +79,10 @@ class CarrierWave:
 
 
 class ModulationWave(CarrierWave):
-    def __init__(self, color, chunk_size, waveform='Triangle'):
+
+    def __init__(self, color, chunk_size, waveform='Triangle', frequency=1):
         self.int_active = False
-        super().__init__(color, chunk_size, waveform)
+        super().__init__(color, chunk_size, waveform, frequency)
         self.mod_index = 0.1
         self.graph_active = True
 
@@ -107,8 +109,8 @@ class ModulationWave(CarrierWave):
         self.mod_index = mi / self.frequency
         self.render_wf()
 
-class MainGrid(BoxLayout):
 
+class MainGrid(BoxLayout):
     equ_color = StringProperty('#08F7FE')
     formula = StringProperty('')
 
@@ -116,8 +118,8 @@ class MainGrid(BoxLayout):
         super(MainGrid, self).__init__()
         chunk_size = 1024
         self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size)
-        self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size)
-        self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size)
+        self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size, frequency=2)
+        self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size, frequency=4)
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
         self._current_tab = 'WF_M1'
         self.old_tab = ''
@@ -159,15 +161,22 @@ class MainGrid(BoxLayout):
         if self._current_tab == 'WF_M1':
             self.formula = LatexNodes2Text().latex_to_text(self.mod_wave_1.equation)
             self.equ_color = self.mod_wave_1.color
+
+            if self.mod_wave_1.int_active:
+                self.formula = LatexNodes2Text().latex_to_text(r'$\int$ ' + self.formula)
+
         elif self._current_tab == 'WF_M2':
             self.formula = LatexNodes2Text().latex_to_text(self.mod_wave_2.equation)
             self.equ_color = self.mod_wave_2.color
+
+            if self.mod_wave_2.int_active:
+                self.formula = LatexNodes2Text().latex_to_text(r'$\int$ ' + self.formula)
+
         elif self._current_tab == 'WF_C':
             self.formula = LatexNodes2Text().latex_to_text(self.carrier.equation)
             self.equ_color = self.carrier.color
 
         if self.formula != self.old_formula or self.current_tab != self.old_tab:
-
             self.old_formula = self.formula
             self.old_tab = self.current_tab
 
@@ -179,7 +188,6 @@ class MainGrid(BoxLayout):
         plt.grid(color='grey', alpha=0.2)
 
     def update_plot(self):
-
         wf_mod = 0
         for i in range(len(self.waveforms)):
             wf_carrier = self.waveforms[i]
@@ -192,13 +200,9 @@ class MainGrid(BoxLayout):
                 if wf_carrier.graph_active:
                     wf_carrier.plot[j].points = [(i, wf_y[i]) for i in range(self.chunk_size)]
                     self.graph.add_plot(wf_carrier.plot[j])
-            pass
-            if isinstance(wf_carrier, ModulationWave):
+
+            if isinstance(wf_carrier, ModulationWave) and wf_carrier.int_active:
                 wf_mod = wf_carrier.y * wf_carrier.mod_index
 
-    # if self.int_active:
-    #     symbol = 'F(x)'
-    #     self.formula = r'$\int$ ' + self.formula
-    #     mod_color = '#F5D300'
 
 MainApp().run()
