@@ -3,6 +3,7 @@ from kivy_garden.graph import LinePlot
 
 from waveform import Triangle, Sawtooth, SquareWave, Sine
 from audiostream import get_output, AudioSample
+from scipy.io import wavfile
 
 
 # discrete integration where s is your signal as array and l is your first entry
@@ -16,6 +17,10 @@ def running_sum(s, l):
 
 def normalize(y):
     return (y - y.min(axis=0)) / (y.max(axis=0) - y.min(axis=0))
+
+
+def normalize_minus_one(y):
+    return 2 * (y - y.min(axis=0)) / (y.max(axis=0) - y.min(axis=0)) - 1
 
 
 def current_trigon_wf(label, a, fm, x, c, lfo=0):
@@ -58,17 +63,18 @@ def hex_to_rgb_array(hex_code):
 
 
 class AudioPlayer:
-    def __init__(self, channels=1, rate=44100, buffer_size=1024, waveforms=[]):
+    def __init__(self, channels=1, rate=22050, buffer_size=1024, waveforms=[]):
         super().__init__()
         self.rate = rate
         self.chunk_size = buffer_size
         self.stream = get_output(channels=channels, rate=rate, buffersize=buffer_size)
         self.sample = AudioSample()
-        self.stream.add_sample(self.sample)
+        #self.stream.add_sample(self.sample)
         self.chunk = None
         self.pos = 0
         self.playing = False
         self.waveforms = waveforms
+        self.chunks = []
 
     def set_chunk(self, y):
         self.chunk = y
@@ -76,7 +82,7 @@ class AudioPlayer:
     @staticmethod
     def get_bytes(chunk):
         # chunk is scaled and converted from float32 to int16 bytes
-        return (chunk * 2**15).astype('int16').tobytes()
+        return (chunk * 32767).astype('int16').tobytes()
 
     def render_audio(self, pos):
 
@@ -84,27 +90,35 @@ class AudioPlayer:
         end = pos + self.chunk_size
         x_audio = np.arange(start, end) / self.rate
 
-        old_wf = 0
+        wf_mod = 0
         for wf in self.waveforms:
-            new_wf = wf.render_wf_audio(x_audio, old_wf)
-            old_wf = new_wf
-            if isinstance(old_wf, ModulationWave) and wf.int_active:
-                old_wf *= old_wf.mod_index
+            wf_c = wf.render_wf_audio(x_audio, wf_mod)
+            if isinstance(wf, ModulationWave) and wf.int_active:
+                wf_mod = wf_c * wf.mod_index
+            else:
+                wf_mod = 0
 
-        return old_wf
+        return wf_c
 
     def run(self):
+        self.sample = AudioSample()
+        self.stream.add_sample(self.sample)
         self.sample.play()
         self.playing = True
+
         while self.playing:
             chunk = self.render_audio(self.pos)
+            self.chunks = np.append(self.chunks, chunk)
             chunk = self.get_bytes(chunk)
             self.sample.write(chunk)
             self.pos += self.chunk_size
-        self.sample.stop()
+            if not self.playing:
+                self.sample.stop()
 
     def stop(self):
         self.playing = False
+        wavfile.write("test.wav", 44100, self.chunks)
+
         self.sample.stop()
 
 
@@ -190,7 +204,7 @@ class ModulationWave(CarrierWave):
     def render_wf_audio(self, x, m):
         if self.int_active:
             result = current_trigon_wf(self.waveform, 0.5, self.frequency, x, 0, m)
-            return normalize(result)
+            return self.discrete_integration(result)
         else:
             return 0
 
