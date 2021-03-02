@@ -1,5 +1,6 @@
-# Filename: frem.kv
+# Filename: main.kv
 #:import utils kivy.utils
+#:import threading threading
 
 <ToggleButton>
     allow_no_selection: False
@@ -13,6 +14,7 @@
 #            pos: self.pos
 
 <MainGrid>:
+
     canvas.before:
         Color:
             rgb: utils.get_color_from_hex('#212946')
@@ -26,7 +28,6 @@
         padding: 5
         orientation: 'vertical'
         size_hint: 1, 1
-
 
         # modulation signal
         BoxLayout:
@@ -443,4 +444,4 @@
                         id: play
                         text: 'PLAY'
                         orientation: 'horizontal'
-                        #on_press: root.audio.render_audio(root.carrier.y)
+                        on_release: threading.Thread(target=root.play_result).start()
