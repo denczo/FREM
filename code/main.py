@@ -40,20 +40,24 @@ class MainGrid(BoxLayout):
     def __init__(self):
         super(MainGrid, self).__init__()
         chunk_size = 1024
-        self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size)
-        self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size, frequency=2)
+        self.chunk_size = chunk_size
+        self.rate = 44100
+        self.wf_labels = ['Sine', 'Triangle', 'Sawtooth', 'Square Wave']
+        self.max_minima = {}
+        self.init_max_min()
+        self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size, max_minima=self.max_minima)
+        self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size, max_minima=self.max_minima, frequency=2)
         self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size, frequency=4)
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
         self._current_tab = 'WF_M1'
         self.old_tab = ''
         self.equ_color = self.mod_wave_1.color
-        self.player = AudioPlayer(1, 44100, 1024, self.waveforms)
-
+        self.player = AudioPlayer(1, 44100, 4096, self.waveforms)
         # self.fig = plt.figure(facecolor='#212946')
 
         self.graph = Graph(y_ticks_major=0.275, x_ticks_major=275,
                            border_color=[0, 1, 1, 1], tick_color=[0, 1, 1, 0.5],
-                           x_grid=True, y_grid=True, xmin=-50, xmax=1050, ymin=-0.05, ymax=1.05, draw_border=True)
+                           x_grid=True, y_grid=True, xmin=-50, xmax=1050, ymin=-0.55, ymax=0.55, draw_border=True)
 
         self.chunk_size = chunk_size
         self.plot_x = np.linspace(0, 1, self.chunk_size)
@@ -65,9 +69,10 @@ class MainGrid(BoxLayout):
         self.lines = []
         self.update_plot()
 
-    def test(self):
-        print(self.ids.play.state)
-        #self.ids.play.state = 'normal'
+    def init_max_min(self):
+        for wf in self.wf_labels:
+            max_minima = MaxMinima(self.rate, self.chunk_size, wf)
+            self.max_minima[wf] = max_minima
 
     @property
     def current_tab(self):

@@ -15,12 +15,14 @@ def running_sum(s, l):
     return y
 
 
+# normalize between -0.5 and 0.5
 def normalize(y):
-    return (y - y.min(axis=0)) / (y.max(axis=0) - y.min(axis=0))
+    return (y - y.min(axis=0)) / (y.max(axis=0) - y.min(axis=0)) - 0.5
 
 
-def normalize_minus_one(y):
-    return 2 * (y - y.min(axis=0)) / (y.max(axis=0) - y.min(axis=0)) - 1
+def normalize_fixed(y, max, min):
+    #return 2*((y - min) / (max - min)) - 1
+    return (y - min) / (max - min) - 0.5
 
 
 def current_trigon_wf(label, a, fm, x, c, lfo=0):
@@ -88,8 +90,8 @@ class AudioPlayer:
 
         start = pos
         end = pos + self.chunk_size
-        x_audio = np.arange(start, end) / self.rate
 
+        x_audio = np.arange(start, end) / self.rate
         wf_mod = 0
         for wf in self.waveforms:
             wf_c = wf.render_wf_audio(x_audio, wf_mod)
@@ -117,8 +119,7 @@ class AudioPlayer:
 
     def stop(self):
         self.playing = False
-        wavfile.write("test.wav", 44100, self.chunks)
-
+        #wavfile.write("test.wav", 44100, self.chunks)
         self.sample.stop()
 
 
@@ -164,30 +165,60 @@ class CarrierWave:
 
     def render_wf(self):
         # label, a = amplitude, f = frequency, x = samples, c = constant, m = modulation wave
-        self.y = current_trigon_wf(self.waveform, 0.5, self.frequency, self.x, 0.5, self.mod_wave)
+        self.y = current_trigon_wf(self.waveform, 0.5, self.frequency, self.x, 0, self.mod_wave)
 
     def render_wf_audio(self, x, m):
-        return current_trigon_wf(self.waveform, 0.5, self.frequency, x, 0.5, m)
+        x_audio = x
+        if len(x) == (self.chunk_size + 1):
+            x_audio = x[1:]
+        return current_trigon_wf(self.waveform, 0.5, self.frequency, x_audio, 0, m)
 
     def render_equation(self):
         self.equation = current_equation(self.waveform, 'Trigonometric function')
 
 
+class MaxMinima:
+
+    def __init__(self, rate, chunk_size, waveform='Sine'):
+        self._global_max = 0
+        self._global_min = 0
+        self.label = waveform
+        # min frequency to get a full period in one chunk
+        self.frequency = int(rate/chunk_size+1)
+        self.x_samples = np.arange(0, chunk_size)/rate
+        self.calc_max_min()
+
+    def calc_max_min(self):
+        result = current_trigon_wf(self.label, 0.5, 1, self.x_samples, 0, 0)
+        integral = running_sum(result, 0)
+        self._global_min = min(integral)
+        self._global_max = max(integral)
+
+    def global_max(self, f=1):
+        return self._global_max/f
+
+    def global_min(self, f=1):
+        return self._global_min/f
+
+
 class ModulationWave(CarrierWave):
 
-    def __init__(self, color, chunk_size, waveform='Triangle', frequency=1):
+    def __init__(self, color, chunk_size, max_minima, waveform='Triangle', frequency=1):
         self.int_active = False
         super().__init__(color, chunk_size, waveform, frequency)
         self.mod_index = 0.1
         self.graph_active = True
+        self.max_minima = max_minima
+        # for discrete integration
+        self.first_entry = 0
 
     def calculate_integral(self, value):
         self.int_active = value
         self.render_wf()
 
     @staticmethod
-    def discrete_integration(chunk):
-        result = running_sum(chunk, 0)
+    def discrete_integration(chunk, first_entry=0):
+        result = running_sum(chunk, first_entry)
         return normalize(result)
 
     def render_wf(self):
@@ -199,12 +230,17 @@ class ModulationWave(CarrierWave):
         else:
             #self.symbol = 'f(x)'
             # label, a = amplitude, f = frequency, x = samples, c = constant, m = modulation wave
-            self.y = current_trigon_wf(self.waveform, 0.5, self.frequency, self.x, 0.5, self.mod_wave)
+            self.y = current_trigon_wf(self.waveform, 0.5, self.frequency, self.x, 0, self.mod_wave)
 
     def render_wf_audio(self, x, m):
         if self.int_active:
             result = current_trigon_wf(self.waveform, 0.5, self.frequency, x, 0, m)
-            return self.discrete_integration(result)
+            result = running_sum(result, self.first_entry)
+            self.first_entry = result[-1]
+            global_min = self.max_minima[self.waveform].global_min(self.frequency)
+            global_max = self.max_minima[self.waveform].global_max(self.frequency)
+            result = normalize_fixed(result, global_max, global_min)
+            return result
         else:
             return 0
 
