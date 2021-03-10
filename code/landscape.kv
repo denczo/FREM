@@ -1,0 +1,558 @@
+# Filename: main.kv
+#:import utils kivy.utils
+#:import threading threading
+
+<ToggleButton>
+    allow_no_selection: False
+
+#<TabbedPanelStrip>
+#    canvas:
+#        Color:
+#            rgba: (0, 1, 0, 1) # green
+#        Rectangle:
+#            size: self.size
+#            pos: self.pos
+
+<MainGrid>:
+
+    canvas.before:
+        Color:
+            rgb: utils.get_color_from_hex('#212946')
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    BoxLayout:
+        spacing: 10
+        id: box
+        padding: 10
+        orientation: 'vertical'
+        size_hint: 1, 1
+
+
+        BoxLayout:
+
+            id: graph
+            orientation: 'horizontal'
+            size_hint: 1, 0.1
+
+            # modulation signal
+            ScrollView:
+                id: view
+                do_scroll_x: True
+                do_scroll_y: False
+                orientation: 'vertical'
+                size_hint: 0.8, 1
+                valign: 'middle'
+                bar_width: 4
+                bar_color: 1, 1, 1, 1
+                bar_inactive_color: 1, 1, 1, 0.5
+                scroll_type: ['content']
+
+                canvas.before:
+                    Color:
+                        rgba: 0, 1, 1, 1
+                    Line:
+                        width: 1.5
+                        rectangle: self.x, self.y, self.width, self.height
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: None, 1
+                    width: view.width*root.zoom
+
+                    BoxLayout:
+                        id: modulation
+                        size_hint_x: 1
+                        size_hint_y: 1
+
+            BoxLayout:
+                id: zoom
+                orientation: 'vertical'
+                size_hint: 0.05, 1
+                padding: 5, 0, 0, 0
+                valign: 'middle'
+
+                Button:
+                    text: '+'
+                    size_hint_y: None
+                    height: self.width
+                    on_release: root.update_zoom(self.text)
+
+                Label:
+                    text: str(int(root.zoom)) + 'x'
+
+                Button:
+                    text: '-'
+                    size_hint_y: None
+                    height: self.width
+                    on_release: root.update_zoom(self.text)
+
+
+#        BoxLayout:
+#            id: equation
+#            padding: 10
+#            orientation: 'vertical'
+#            size_hint: 1, 0.01
+#            valign: 'middle'
+#
+#            Label:
+#                bold: True
+#                text: root.formula
+#                color: utils.get_color_from_hex(root.equ_color)
+#
+
+        BoxLayout:
+            id: panel
+            size_hint: 1, 0.2
+            spacing: 10
+            background_color: (0,0,0,0.2)
+
+            #=======================================#
+            #         TAB MOD WAVE 1 SIGNAL         #
+            #=======================================#
+            BoxLayout:
+                id: wf_m1
+                text: 'WF I \n(Modulation)'
+                padding: 10
+                #on_press: root.update_equation()
+                #on_press: root.current_tab = 'WF_M1'
+
+                canvas.before:
+                    Color:
+                        rgba: .031, .968, .996, 1
+                    Line:
+                        width: 1.5
+                        rectangle: self.x, self.y, self.width, self.height
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 1, 1
+
+
+                    BoxLayout:
+                        padding: 10
+                        orientation: 'horizontal'
+                        size_hint: 1, 0.2
+                        valign: 'middle'
+
+                        Label:
+                            id: equ_wf_1
+                            bold: True
+                            text: 'str(root.mod_wave_1.equation)'
+                            color: '#08F7FE'
+
+                    # waveform selection
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: 1, 0.2
+
+                        ToggleButton:
+                            text: 'Sine'
+                            group: 'wf_m1'
+                            orientation: 'horizontal'
+                            state: 'down'
+                            on_press: root.update_plot()
+                            on_press: root.mod_wave_1.change_waveform('Sine')
+
+                        ToggleButton:
+                            text: 'Sawtooth'
+                            group: 'wf_m1'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.mod_wave_1.change_waveform('Sawtooth')
+
+                        ToggleButton:
+                            text: 'Triangle'
+                            group: 'wf_m1'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.mod_wave_1.change_waveform('Triangle')
+
+                        ToggleButton:
+                            text: 'Square'
+                            group: 'wf_m1'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.mod_wave_1.change_waveform('Square Wave')
+
+                    # parameter modulation signal
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            text: 'graph visible'
+                            text_size: self.size
+                            valign: 'middle'
+                            padding_x: 20
+
+                        Switch:
+                            id: mod_1_visible
+                            active: True
+                            on_active: root.mod_wave_1.graph_active = mod_1_visible.active
+                            on_active: root.update_plot()
+
+#                    BoxLayout:
+#                        size_hint: 0.9, 0.2
+#
+#                        BoxLayout:
+#                            size_hint: 0.61, 1
+#                            Label:
+#                                text: 'modulation type'
+#                                text_size: self.size
+#                                valign: 'middle'
+#                                padding_x: 20
+#
+#                        BoxLayout:
+#                            size_hint: 0.59, 0.8
+#                            pos_hint: {'y': .1}
+#
+#                            ToggleButton:
+#                                text: 'PWM'
+#                                group: 'm1_type'
+#                                orientation: 'horizontal'
+#                                disabled: True
+#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
+#
+#                            ToggleButton:
+#                                text: 'AM'
+#                                group: 'm1_type'
+#                                orientation: 'horizontal'
+#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
+#
+#                            ToggleButton:
+#                                text: 'FM'
+#                                group: 'm1_type'
+#                                state: 'down'
+#                                orientation: 'horizontal'
+#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
+
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            text: 'calculate F(x)'
+                            text_size: self.size
+                            valign: 'middle'
+                            padding_x: 20
+
+                        Switch:
+                            id: m1_int_active
+                            on_active: root.mod_wave_1.calculate_integral(m1_int_active.active)
+                            on_active: root.update_plot()
+
+
+                    BoxLayout:
+                        size_hint: 1, 0.6
+                        orientation: 'vertical'
+
+                        Label:
+                            text: 'Frequency: ' + str(m1_freq_mod.value) + ' hz'
+
+                        Slider:
+                            id: m1_freq_mod
+                            min: 0.125
+                            max: 5
+                            padding: 30
+                            value: 1
+                            step: 0.125
+                            on_value: root.mod_wave_1.change_frequency(m1_freq_mod.value)
+                            on_value: root.update_plot()
+
+                        Label:
+                            text: 'Modulation Index: ' + str(int(m1_mod_index.value))
+
+                        Slider:
+                            id: m1_mod_index
+                            min: 0.1
+                            max: 100
+                            padding: 30
+                            step: 1
+                            disabled: not(m1_int_active.active)
+                            on_value: root.mod_wave_1.change_mod_index(m1_mod_index.value)
+                            on_value: root.update_plot()
+
+            #=======================================#
+            #         TAB MOD WAVE 2 SIGNAL         #
+            #=======================================#
+            BoxLayout:
+                id: wf_m2
+                text: 'WF II \n(Modulation)'
+                #on_press: root.update_equation()
+                #on_press: root.current_tab = 'WF_M2'
+
+                padding: 10
+                canvas.before:
+                    Color:
+                        rgba: .996, .325, .733, 1
+                    Line:
+                        width: 1.5
+                        rectangle: self.x, self.y, self.width, self.height
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 1, 1
+
+                    BoxLayout:
+                        padding: 10
+                        orientation: 'horizontal'
+                        size_hint: 1, 0.2
+                        valign: 'middle'
+
+                        Label:
+                            id: equ_wf_2
+                            bold: True
+                            text: 'str(root.mod_wave_1.equation)'
+                            color: '#FE53BB'
+
+                    # waveform selection
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: 1, 0.2
+
+                        ToggleButton:
+                            text: 'Sine'
+                            group: 'wf_m2'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.mod_wave_2.change_waveform('Sine')
+
+                        ToggleButton:
+                            text: 'Sawtooth'
+                            group: 'wf_m2'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.mod_wave_2.change_waveform('Sawtooth')
+
+                        ToggleButton:
+                            text: 'Triangle'
+                            group: 'wf_m2'
+                            state: 'down'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.mod_wave_2.change_waveform('Triangle')
+
+                        ToggleButton:
+                            text: 'Square'
+                            group: 'wf_m2'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.mod_wave_2.change_waveform('Square Wave')
+
+                    # parameter modulation signal
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            text: 'graph visible'
+                            text_size: self.size
+                            valign: 'middle'
+                            padding_x: 20
+
+                        Switch:
+                            id: m2_mod_visible
+                            active: True
+                            on_active: root.mod_wave_2.graph_active = m2_mod_visible.active
+                            on_active: root.update_plot()
+
+#                    BoxLayout:
+#                        size_hint: 0.9, 0.2
+#
+#                        BoxLayout:
+#                            size_hint: 0.61, 1
+#                            Label:
+#                                text: 'modulation type'
+#                                text_size: self.size
+#                                valign: 'middle'
+#                                padding_x: 20
+#
+#                        BoxLayout:
+#                            size_hint: 0.59, 0.8
+#                            pos_hint: {'y': .1}
+#
+#                            ToggleButton:
+#                                text: 'PWM'
+#                                group: 'm2_type'
+#                                orientation: 'horizontal'
+#                                disabled: True
+#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
+#
+#                            ToggleButton:
+#                                text: 'AM'
+#                                group: 'm2_type'
+#                                orientation: 'horizontal'
+#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
+#
+#                            ToggleButton:
+#                                text: 'FM'
+#                                group: 'm2_type'
+#                                state: 'down'
+#                                orientation: 'horizontal'
+#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
+
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            text: 'calculate F(x)'
+                            text_size: self.size
+                            valign: 'middle'
+                            padding_x: 20
+
+                        Switch:
+                            id: m2_int_active
+                            on_active: root.mod_wave_2.calculate_integral(m2_int_active.active)
+                            on_active: root.update_plot()
+
+#                    BoxLayout:
+#                        size_hint: 1, 0.2
+#
+#                        Label:
+#                            id: integral
+#                            text: 'apply'
+#                            text_size: self.size
+#                            valign: "middle"
+#                            padding_x: 20
+#
+#                        Switch:
+#                            id: int_active
+#                            on_active: root.mod_wave_2.int_active = int_active.active
+#                            on_active: root.update_plot()
+
+                    BoxLayout:
+                        size_hint: 1, 0.6
+                        orientation: 'vertical'
+
+                        Label:
+                            text: 'Frequency: ' + str(m2_freq_mod.value) + ' hz'
+
+                        Slider:
+                            id: m2_freq_mod
+                            min: 1
+                            max: 20
+                            padding: 30
+                            value: 2
+                            step: 0.5
+                            on_value: root.mod_wave_2.change_frequency(m2_freq_mod.value)
+                            on_value: root.update_plot()
+
+                        Label:
+                            text: 'Modulation Index: ' + str(int(m2_mod_index.value))
+
+                        Slider:
+                            id: m2_mod_index
+                            min: 0.1
+                            max: 500
+                            padding: 30
+                            step: 1
+                            disabled: not(m2_int_active.active)
+                            on_value: root.mod_wave_2.change_mod_index(m2_mod_index.value)
+                            on_value: root.update_plot()
+
+            #=======================================#
+            #           TAB CARRIER SIGNAL          #
+            #=======================================#
+            BoxLayout:
+                id: car
+                text: 'WF III \n(Carrier)'
+                padding: 10
+                #on_press: root.update_equation()
+                #on_press: root.current_tab = 'WF_C'
+
+                canvas.before:
+                    Color:
+                        rgba: 0, 1, .254, 1
+                    Line:
+                        width: 1.5
+                        rectangle: self.x, self.y, self.width, self.height
+
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint: 1, 1
+
+                    BoxLayout:
+                        padding: 10
+                        orientation: 'horizontal'
+                        size_hint: 1, 0.2
+                        valign: 'middle'
+
+                        Label:
+                            id: equ_wf_3
+                            bold: True
+                            text: ''
+                            color: '#00ff41'
+
+                    # waveform selection
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: 1, 0.2
+
+                        ToggleButton:
+                            text: 'Sine'
+                            group: 'wf_carrier'
+                            state: 'down'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.carrier.change_waveform('Sine')
+
+                        ToggleButton:
+                            text: 'Sawtooth'
+                            group: 'wf_carrier'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.carrier.change_waveform('Sawtooth')
+
+                        ToggleButton:
+                            text: 'Triangle'
+                            group: 'wf_carrier'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.carrier.change_waveform('Triangle')
+
+                        ToggleButton:
+                            text: 'Square'
+                            group: 'wf_carrier'
+                            orientation: 'horizontal'
+                            on_press: root.update_plot()
+                            on_press: root.carrier.change_waveform('Square Wave')
+
+                    # parameter
+                    BoxLayout:
+                        size_hint: 1, 0.2
+
+                        Label:
+                            text: 'graph visible'
+
+                        Switch:
+                            id: car_visible
+                            on_active: root.carrier.graph_active = car_visible.active
+                            on_active: root.update_plot()
+
+
+                    BoxLayout:
+                        size_hint: 1, 0.4
+                        orientation: 'vertical'
+
+                        Label:
+                            text: 'Frequency: ' + str(freq_car.value) + ' hz'
+
+                        Slider:
+                            id: freq_car
+                            min: 0
+                            max: 500
+                            padding: 30
+                            value: 4
+                            disabled: not(car_visible.active)
+                            step: 1
+                            on_value: root.carrier.change_frequency(freq_car.value)
+                            on_value: root.update_plot()
+
+
+
+                    ToggleButton:
+                        size_hint: 1, 0.2
+                        id: play
+                        text: 'PLAY'
+                        orientation: 'horizontal'
+                        on_release: threading.Thread(target=root.play_result).start()

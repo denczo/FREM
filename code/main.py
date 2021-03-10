@@ -9,12 +9,31 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy_garden.graph import Graph, LinePlot
 # from scipy.io import wavfile
 from pylatexenc.latex2text import LatexNodes2Text
-from kivy.properties import StringProperty
+from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 from kivy.config import Config
 from tools import *
+from kivy.lang import Builder
 
-Config.set('graphics', 'width', '576')
-Config.set('graphics', 'height', '1024')
+
+orientation = 'landscape'
+width = ''
+height = ''
+draw_border = True
+
+if orientation == 'landscape':
+    height = '576'
+    width = '1024'
+    Builder.load_file('landscape.kv')
+    draw_border = False
+
+elif orientation == 'portrait':
+    width = '576'
+    height = '1024'
+    Builder.load_file('portrait.kv')
+    draw_border = True
+
+Config.set('graphics', 'width', width)
+Config.set('graphics', 'height', height)
 
 
 
@@ -36,6 +55,10 @@ colors = [
 class MainGrid(BoxLayout):
     equ_color = StringProperty('#08F7FE')
     formula = StringProperty('')
+    zoom = NumericProperty(1)
+    mod_wave_1 = ObjectProperty(ModulationWave)
+    mod_wave_2 = ObjectProperty(ModulationWave)
+    carrier = ObjectProperty(CarrierWave)
 
     def __init__(self):
         super(MainGrid, self).__init__()
@@ -48,16 +71,21 @@ class MainGrid(BoxLayout):
         self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size, max_minima=self.max_minima)
         self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size, max_minima=self.max_minima, frequency=2)
         self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size, frequency=4)
+
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
         self._current_tab = 'WF_M1'
         self.old_tab = ''
         self.equ_color = self.mod_wave_1.color
         self.player = AudioPlayer(1, 44100, 4096, self.waveforms)
+
+        self.graph_max_y = 1100
+        self.graph_min_y = -76
+
         # self.fig = plt.figure(facecolor='#212946')
 
-        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=275,
+        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=50,
                            border_color=[0, 1, 1, 1], tick_color=[0, 1, 1, 0.5],
-                           x_grid=True, y_grid=True, xmin=-50, xmax=1050, ymin=-0.55, ymax=0.55, draw_border=True)
+                           x_grid=True, y_grid=True, xmin=self.graph_min_y, xmax=self.graph_max_y, ymin=-0.55, ymax=0.55, draw_border=draw_border)
 
         self.chunk_size = chunk_size
         self.plot_x = np.linspace(0, 1, self.chunk_size)
@@ -73,6 +101,12 @@ class MainGrid(BoxLayout):
         for wf in self.wf_labels:
             max_minima = MaxMinima(self.rate, self.chunk_size, wf)
             self.max_minima[wf] = max_minima
+
+    def update_zoom(self, value):
+        if value == '+' and self.zoom < 16:
+            self.zoom *= 2
+        elif value == '-' and self.zoom > 1:
+            self.zoom /= 2
 
     @property
     def current_tab(self):
@@ -112,10 +146,17 @@ class MainGrid(BoxLayout):
         else:
             self.player.stop()
 
+    def update_equations(self):
+        self.ids.equ_wf_1.text = self.mod_wave_1.equation
+        self.ids.equ_wf_2.text = self.mod_wave_2.equation
+        self.ids.equ_wf_3.text = self.carrier.equation
+
     def update_plot(self):
+
         wf_mod = 0
         for i in range(len(self.waveforms)):
             wf_carrier = self.waveforms[i]
+            wf_carrier.render_equation()
             wf_carrier.change_mod_wave(wf_mod)
             wf_y = wf_carrier.y
 
@@ -128,6 +169,7 @@ class MainGrid(BoxLayout):
 
             if isinstance(wf_carrier, ModulationWave) and wf_carrier.int_active:
                 wf_mod = wf_carrier.y * wf_carrier.mod_index
+        self.update_equations()
 
 
 MainApp().run()

@@ -1,5 +1,8 @@
 import numpy as np
+from kivy.event import EventDispatcher
+from kivy.properties import StringProperty, ObjectProperty
 from kivy_garden.graph import LinePlot
+from pylatexenc.latex2text import LatexNodes2Text
 
 from waveform import Triangle, Sawtooth, SquareWave, Sine
 from audiostream import get_output, AudioSample
@@ -123,7 +126,10 @@ class AudioPlayer:
         self.sample.stop()
 
 
-class CarrierWave:
+class CarrierWave(EventDispatcher):
+
+    equation = StringProperty('')
+    #color = StringProperty('')
 
     def __init__(self, color, chunk_size, waveform='Sine', frequency=1):
         self.chunk_size = chunk_size
@@ -174,7 +180,7 @@ class CarrierWave:
         return current_trigon_wf(self.waveform, 0.5, self.frequency, x_audio, 0, m)
 
     def render_equation(self):
-        self.equation = current_equation(self.waveform, 'Trigonometric function')
+        self.equation = LatexNodes2Text().latex_to_text(current_equation(self.waveform, 'Trigonometric function'))
 
 
 class MaxMinima:
@@ -247,3 +253,10 @@ class ModulationWave(CarrierWave):
     def change_mod_index(self, mi):
         self.mod_index = mi / self.frequency
         self.render_wf()
+
+    def render_equation(self):
+        prefix = ''
+        if self.int_active:
+            prefix = r'$\int$ '
+        result = LatexNodes2Text().latex_to_text(prefix + current_equation(self.waveform, 'Trigonometric function'))
+        self.equation = result
