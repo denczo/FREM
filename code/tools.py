@@ -6,7 +6,6 @@ from pylatexenc.latex2text import LatexNodes2Text
 
 from waveform import Triangle, Sawtooth, SquareWave, Sine
 from audiostream import get_output, AudioSample
-from scipy.io import wavfile
 
 
 # discrete integration where s is your signal as array and l is your first entry

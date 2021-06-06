@@ -1,6 +1,7 @@
 # Filename: main.kv
 #:import utils kivy.utils
 #:import threading threading
+#:import builder kivy.lang.Builder
 
 <ToggleButton>
     allow_no_selection: False
@@ -13,7 +14,9 @@
 #            size: self.size
 #            pos: self.pos
 
+#<Landscape@Screen>:
 <MainGrid>:
+    #name: 'landscape'
 
     canvas.before:
         Color:
@@ -29,7 +32,9 @@
         orientation: 'vertical'
         size_hint: 1, 1
 
-
+        #=======================================#
+        #         LANDSCAPE ORIENTATION         #
+        #=======================================#
         BoxLayout:
 
             id: graph
@@ -555,4 +560,5 @@
                         id: play
                         text: 'PLAY'
                         orientation: 'horizontal'
+                        #on_press: builder.unload_file('landscape.kv'), builder.load_file('portrait.kv'), root.play_result()
                         on_release: threading.Thread(target=root.play_result).start()
