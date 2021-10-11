@@ -121,14 +121,13 @@ class AudioPlayer:
 
     def stop(self):
         self.playing = False
-        #wavfile.write("test.wav", 44100, self.chunks)
         self.sample.stop()
 
 
 class CarrierWave(EventDispatcher):
 
     equation = StringProperty('')
-    #color = StringProperty('')
+    # color = StringProperty('')
 
     def __init__(self, color, chunk_size, waveform='Sine', frequency=1):
         self.chunk_size = chunk_size

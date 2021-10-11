@@ -6,18 +6,10 @@
 <ToggleButton>
     allow_no_selection: False
 
-#<TabbedPanelStrip>
-#    canvas:
-#        Color:
-#            rgba: (0, 1, 0, 1) # green
-#        Rectangle:
-#            size: self.size
-#            pos: self.pos
 
-#<Landscape@Screen>:
+
+
 <MainGrid>:
-    #name: 'landscape'
-
     canvas.before:
         Color:
             rgb: utils.get_color_from_hex('#212946')
@@ -31,7 +23,10 @@
         padding: 10
         orientation: 'vertical'
         size_hint: 1, 1
-
+#        size_hint_x: None
+#        size_hint_y: None
+#        width: self.parent.width
+#        height: self.parent.width/(16/9)
         #=======================================#
         #         LANDSCAPE ORIENTATION         #
         #=======================================#
@@ -93,20 +88,6 @@
                     height: self.width
                     on_release: root.update_zoom(self.text)
 
-
-#        BoxLayout:
-#            id: equation
-#            padding: 10
-#            orientation: 'vertical'
-#            size_hint: 1, 0.01
-#            valign: 'middle'
-#
-#            Label:
-#                bold: True
-#                text: root.formula
-#                color: utils.get_color_from_hex(root.equ_color)
-#
-
         BoxLayout:
             id: panel
             size_hint: 1, 0.2
@@ -120,9 +101,6 @@
                 id: wf_m1
                 text: 'WF I \n(Modulation)'
                 padding: 10
-                #on_press: root.update_equation()
-                #on_press: root.current_tab = 'WF_M1'
-
                 canvas.before:
                     Color:
                         rgba: .031, .968, .996, 1
@@ -144,7 +122,7 @@
                         Label:
                             id: equ_wf_1
                             bold: True
-                            text: 'str(root.mod_wave_1.equation)'
+                            text: str(root.mod_wave_1.equation)
                             color: '#08F7FE'
 
                     # waveform selection
@@ -197,41 +175,6 @@
                             on_active: root.mod_wave_1.graph_active = mod_1_visible.active
                             on_active: root.update_plot()
 
-#                    BoxLayout:
-#                        size_hint: 0.9, 0.2
-#
-#                        BoxLayout:
-#                            size_hint: 0.61, 1
-#                            Label:
-#                                text: 'modulation type'
-#                                text_size: self.size
-#                                valign: 'middle'
-#                                padding_x: 20
-#
-#                        BoxLayout:
-#                            size_hint: 0.59, 0.8
-#                            pos_hint: {'y': .1}
-#
-#                            ToggleButton:
-#                                text: 'PWM'
-#                                group: 'm1_type'
-#                                orientation: 'horizontal'
-#                                disabled: True
-#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
-#
-#                            ToggleButton:
-#                                text: 'AM'
-#                                group: 'm1_type'
-#                                orientation: 'horizontal'
-#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
-#
-#                            ToggleButton:
-#                                text: 'FM'
-#                                group: 'm1_type'
-#                                state: 'down'
-#                                orientation: 'horizontal'
-#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
-
                     BoxLayout:
                         size_hint: 1, 0.2
 
@@ -283,9 +226,6 @@
             BoxLayout:
                 id: wf_m2
                 text: 'WF II \n(Modulation)'
-                #on_press: root.update_equation()
-                #on_press: root.current_tab = 'WF_M2'
-
                 padding: 10
                 canvas.before:
                     Color:
@@ -360,41 +300,6 @@
                             on_active: root.mod_wave_2.graph_active = m2_mod_visible.active
                             on_active: root.update_plot()
 
-#                    BoxLayout:
-#                        size_hint: 0.9, 0.2
-#
-#                        BoxLayout:
-#                            size_hint: 0.61, 1
-#                            Label:
-#                                text: 'modulation type'
-#                                text_size: self.size
-#                                valign: 'middle'
-#                                padding_x: 20
-#
-#                        BoxLayout:
-#                            size_hint: 0.59, 0.8
-#                            pos_hint: {'y': .1}
-#
-#                            ToggleButton:
-#                                text: 'PWM'
-#                                group: 'm2_type'
-#                                orientation: 'horizontal'
-#                                disabled: True
-#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
-#
-#                            ToggleButton:
-#                                text: 'AM'
-#                                group: 'm2_type'
-#                                orientation: 'horizontal'
-#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
-#
-#                            ToggleButton:
-#                                text: 'FM'
-#                                group: 'm2_type'
-#                                state: 'down'
-#                                orientation: 'horizontal'
-#                                #on_press: root.mod_wave_2.waveform = 'Sawtooth'
-
                     BoxLayout:
                         size_hint: 1, 0.2
 
@@ -408,21 +313,6 @@
                             id: m2_int_active
                             on_active: root.mod_wave_2.calculate_integral(m2_int_active.active)
                             on_active: root.update_plot()
-
-#                    BoxLayout:
-#                        size_hint: 1, 0.2
-#
-#                        Label:
-#                            id: integral
-#                            text: 'apply'
-#                            text_size: self.size
-#                            valign: "middle"
-#                            padding_x: 20
-#
-#                        Switch:
-#                            id: int_active
-#                            on_active: root.mod_wave_2.int_active = int_active.active
-#                            on_active: root.update_plot()
 
                     BoxLayout:
                         size_hint: 1, 0.6
@@ -461,9 +351,6 @@
                 id: car
                 text: 'WF III \n(Carrier)'
                 padding: 10
-                #on_press: root.update_equation()
-                #on_press: root.current_tab = 'WF_C'
-
                 canvas.before:
                     Color:
                         rgba: 0, 1, .254, 1
@@ -553,12 +440,9 @@
                             on_value: root.carrier.change_frequency(freq_car.value)
                             on_value: root.update_plot()
 
-
-
                     ToggleButton:
                         size_hint: 1, 0.2
                         id: play
                         text: 'PLAY'
                         orientation: 'horizontal'
-                        #on_press: builder.unload_file('landscape.kv'), builder.load_file('portrait.kv'), root.play_result()
                         on_release: threading.Thread(target=root.play_result).start()

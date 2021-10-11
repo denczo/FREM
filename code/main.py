@@ -16,11 +16,13 @@ from tools import *
 from kivy.lang import Builder
 
 
-# orientation = 'portrait'
-# width = ''
-# height = ''
-# draw_border = True
-#
+#orientation = 'portrait'
+
+orientation = 'landscape'
+width = ''
+height = ''
+draw_border = True
+
 # if orientation == 'landscape':
 #     height = '576'
 #     width = '1024'
@@ -34,7 +36,7 @@ from kivy.lang import Builder
 #     Builder.unload_file('landscape.kv')
 #     Builder.load_file('portrait.kv')
 #     draw_border = True
-#
+
 # Config.set('graphics', 'width', width)
 # Config.set('graphics', 'height', height)
 # Builder.load_file('portrait.kv')
@@ -43,7 +45,8 @@ from kivy.lang import Builder
 # Config.set('graphics', 'width', width)
 # Config.set('graphics', 'height', height)
 # Builder.load_file('portrait.kv')
-# Builder.load_file('landscape.kv')
+Builder.load_file('landscape.kv')
+
 
 # FREM
 class MainApp(App):
@@ -51,19 +54,6 @@ class MainApp(App):
     def build(self):
 
         return MainGrid()
-        # sm = ScreenManager()
-        # sm.add_widget(Landscape(name='landscape'))
-        # sm.add_widget(Portrait(name='portrait'))
-        # self.builder = Builder
-        # return sm
-
-
-class Landscape(Screen):
-    pass
-
-
-class Portrait(Screen):
-    pass
 
 
 colors = [
@@ -83,12 +73,7 @@ class MainGrid(BoxLayout):
     carrier = ObjectProperty(CarrierWave)
 
     def __init__(self, **kw):
-    #def __init__(self):
-
-        #self.orientation()
-        #self.manager = Manager(transition=NoTransition())
         super(MainGrid, self).__init__(**kw)
-        #super(MainGrid, self).__init__()
         chunk_size = 1024
         self.builder = Builder
         self.chunk_size = chunk_size
@@ -109,9 +94,6 @@ class MainGrid(BoxLayout):
 
         self.graph_max_y = 1100
         self.graph_min_y = -76
-
-        # self.fig = plt.figure(facecolor='#212946')
-
         self.graph = Graph(y_ticks_major=0.275, x_ticks_major=50,
                            border_color=[0, 1, 1, 1], tick_color=[0, 1, 1, 0.5],
                            x_grid=True, y_grid=True, xmin=self.graph_min_y, xmax=self.graph_max_y, ymin=-0.55, ymax=0.55, draw_border=self.draw_border)
@@ -120,44 +102,12 @@ class MainGrid(BoxLayout):
         self.plot_x = np.linspace(0, 1, self.chunk_size)
         self.plot_y = np.zeros(self.chunk_size)
 
-        #self.ids.modulation.add_widget(self.graph)
-        print("HERE")
+        self.ids.modulation.add_widget(self.graph)
         self.formula = ''
         self.old_formula = ''
         self.lines = []
         self.update_plot()
-
-    def on_size(self, *args):
-        #self.clear_widgets()
-        self.orientation()
-        if self.width > self.height:
-            print('horizontal', self.width, self.height)
-        else:
-            print('vertical', self.width, self.height)
-
-    def test(self, dt):
-        print('test ', dt)
-
-    def orientation(self):
-        #print(self.width, self.height)
-        if self.height > self.width:
-            print("LANDSCAPE")
-            #Builder.unload_file('portrait.kv')
-            Builder.load_file('landscape.kv')
-            self.draw_border = True
-            #height = '576'
-            #width = '1024'
-        else:
-            print("PORTRAIT")
-            #Builder.unload_file('landscape.kv')
-            Builder.load_file('portrait.kv')
-            self.draw_border = False
-            #width = '576'
-            #height = '1024'
-
-        #Window.size = (int(height), int(width))
-        #self.ids.modulation.add_widget(self.graph)
-        #self.clear_widgets()
+        self.update_equations()
 
     def init_max_min(self):
         for wf in self.wf_labels:
@@ -165,8 +115,6 @@ class MainGrid(BoxLayout):
             self.max_minima[wf] = max_minima
 
     def update_zoom(self, value):
-        self.ids.equ_wf_2.text = str(self.width) + " x " + str(self.height)
-
         if value == '+' and self.zoom < 16:
             self.zoom *= 2
         elif value == '-' and self.zoom > 1:
@@ -204,11 +152,6 @@ class MainGrid(BoxLayout):
             self.old_tab = self.current_tab
 
     def play_result(self):
-        height = self.height
-        self.height = self.width
-        self.width = height
-        self.clear_widgets()
-        self.__init__()
         if self.ids.play.state == 'down':
             self.player.run()
         else:
@@ -216,7 +159,7 @@ class MainGrid(BoxLayout):
 
     def update_equations(self):
         self.ids.equ_wf_1.text = self.mod_wave_1.equation
-        #self.ids.equ_wf_2.text = self.mod_wave_2.equation
+        self.ids.equ_wf_2.text = self.mod_wave_2.equation
         self.ids.equ_wf_3.text = self.carrier.equation
 
     def update_plot(self):
