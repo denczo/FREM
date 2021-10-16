@@ -15,8 +15,7 @@ from kivy.config import Config
 from tools import *
 from kivy.lang import Builder
 
-
-#orientation = 'portrait'
+# orientation = 'portrait'
 
 orientation = 'landscape'
 width = ''
@@ -52,7 +51,6 @@ Builder.load_file('landscape.kv')
 class MainApp(App):
 
     def build(self):
-
         return MainGrid()
 
 
@@ -82,7 +80,8 @@ class MainGrid(BoxLayout):
         self.max_minima = {}
         self.init_max_min()
         self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size, max_minima=self.max_minima)
-        self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size, max_minima=self.max_minima, frequency=2)
+        self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size,
+                                         max_minima=self.max_minima, frequency=2)
         self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size, frequency=4)
         self.draw_border = False
 
@@ -96,7 +95,8 @@ class MainGrid(BoxLayout):
         self.graph_min_y = -76
         self.graph = Graph(y_ticks_major=0.275, x_ticks_major=50,
                            border_color=[0, 1, 1, 1], tick_color=[0, 1, 1, 0.5],
-                           x_grid=True, y_grid=True, xmin=self.graph_min_y, xmax=self.graph_max_y, ymin=-0.55, ymax=0.55, draw_border=self.draw_border)
+                           x_grid=True, y_grid=True, xmin=self.graph_min_y, xmax=self.graph_max_y, ymin=-0.55,
+                           ymax=0.55, draw_border=self.draw_border)
 
         self.chunk_size = chunk_size
         self.plot_x = np.linspace(0, 1, self.chunk_size)
@@ -185,4 +185,3 @@ class MainGrid(BoxLayout):
 
 
 MainApp().run()
-
