@@ -3,11 +3,67 @@
 #:import threading threading
 #:import builder kivy.lang.Builder
 
+<RotatedImage>:
+    canvas.before:
+        PushMatrix
+        Rotate:
+            angle: root.angle
+            axis: 0, 0, 1
+            origin: root.center
+    canvas.after:
+        PopMatrix
+
+<P>:
+    Image:
+        source: 'logo/frem_logo_font.png'
+        size_hint: 1, 0.15
+        pos_hint: {"x":0.45, "top":1.12}
+
+    ScrollView:
+        size_hint: 1, 0.8
+        pos_hint: {"x":0, "top":0.95}
+
+        Label:
+            id: infoText
+            text: ""
+            markup: True
+            size_hint: 1, None
+            text_size: self.width, None
+            height: self.texture_size[1]
+
+    Button:
+        text: "Close"
+        size_hint: 0.2, 0.1
+        pos_hint: {"x":0.4, "y":0.0}
+        on_release: root.popupWindow.dismiss()
+
+<Warning>:
+    padding: 10
+
+    Image:
+        source: 'logo/warning.png'
+        size_hint: 0.2, 0.5
+        pos_hint: {"x":0.4, "top":1}
+
+    Label:
+        id: infoText
+        text: "[b]Please lower your volume before using this app! This app let you experiment with audio which can be loud and unpleasant in some cases![/b]"
+        markup: True
+        font_size: 20
+        halign: 'center'
+        valign: 'middle'
+        text_size: self.width, None
+        height: self.texture_size[1]
+
+    Button:
+        text: "Close"
+        size_hint: 0.2, 0.1
+        pos_hint: {"x":0.4, "y":0.0}
+        on_release: root.popupWindow.dismiss()
+
+
 <ToggleButton>
     allow_no_selection: False
-
-
-
 
 <MainGrid>:
     canvas.before:
@@ -23,6 +79,10 @@
         padding: 10
         orientation: 'vertical'
         size_hint: 1, 1
+
+
+
+
 #        size_hint_x: None
 #        size_hint_y: None
 #        width: self.parent.width
@@ -35,6 +95,26 @@
             id: graph
             orientation: 'horizontal'
             size_hint: 1, 0.1
+            BoxLayout:
+                orientation: 'vertical'
+                id: info
+                size_hint: 0.05, 1
+                padding: 0,0,5,0
+
+                Button:
+                    text: '[b]?[/b]'
+                    markup: True
+                    size_hint_y: None
+                    height: self.width
+                    on_release: root.show_popup()
+
+
+                RotatedImage:
+                    angle: 90
+                    source: 'logo/frem_logo_font.png'
+                    size_hint: 2, 2
+                    pos_hint: {"x":-0.5 , "y":0.0}
+
 
             # modulation signal
             ScrollView:
@@ -65,6 +145,7 @@
                         id: modulation
                         size_hint_x: 1
                         size_hint_y: 1
+
 
             BoxLayout:
                 id: zoom
@@ -124,6 +205,8 @@
                             bold: True
                             text: str(root.mod_wave_1.equation)
                             color: '#08F7FE'
+                            width: self.height
+                            font_size: self.width/17
 
                     # waveform selection
                     BoxLayout:
@@ -139,7 +222,7 @@
                             on_press: root.mod_wave_1.change_waveform('Sine')
 
                         ToggleButton:
-                            text: 'Sawtooth'
+                            text: 'Saw'
                             group: 'wf_m1'
                             orientation: 'horizontal'
                             on_press: root.update_plot()
@@ -249,6 +332,8 @@
                             bold: True
                             text: 'str(root.mod_wave_1.equation)'
                             color: '#FE53BB'
+                            width: self.height
+                            font_size: self.width/17
 
                     # waveform selection
                     BoxLayout:
@@ -263,7 +348,7 @@
                             on_press: root.mod_wave_2.change_waveform('Sine')
 
                         ToggleButton:
-                            text: 'Sawtooth'
+                            text: 'Saw'
                             group: 'wf_m2'
                             orientation: 'horizontal'
                             on_press: root.update_plot()
@@ -374,6 +459,8 @@
                             bold: True
                             text: ''
                             color: '#00ff41'
+                            width: self.height
+                            font_size: self.width/17
 
                     # waveform selection
                     BoxLayout:
@@ -389,7 +476,7 @@
                             on_press: root.carrier.change_waveform('Sine')
 
                         ToggleButton:
-                            text: 'Sawtooth'
+                            text: 'Saw'
                             group: 'wf_carrier'
                             orientation: 'horizontal'
                             on_press: root.update_plot()
@@ -443,6 +530,7 @@
                     ToggleButton:
                         size_hint: 1, 0.2
                         id: play
-                        text: 'PLAY'
+                        markup: True
+                        text: '[b]PLAY[/b]'
                         orientation: 'horizontal'
                         on_release: threading.Thread(target=root.play_result).start()

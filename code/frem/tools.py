@@ -147,8 +147,8 @@ class CarrierWave(EventDispatcher):
         self.render_equation()
 
     def init_plot(self, color):
-        max_width = 2
-        end = 2
+        max_width = 3
+        end = 5
         for i in range(1, end):
             width = max_width / i
             color[-1] = i / (end - 1)

@@ -1,6 +1,8 @@
 import os
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
 from time import sleep
+
+from kivy.uix.image import Image
 from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 import kivy
 from kivy.core.window import Window
@@ -14,44 +16,19 @@ from kivy.properties import StringProperty, NumericProperty, ObjectProperty
 from kivy.config import Config
 from tools import *
 from kivy.lang import Builder
-
-# orientation = 'portrait'
-
-orientation = 'landscape'
-width = ''
-height = ''
-draw_border = True
-
-# if orientation == 'landscape':
-#     height = '576'
-#     width = '1024'
-#     Builder.unload_file('portrait.kv')
-#     Builder.load_file('landscape.kv')
-#     draw_border = False
-#
-# elif orientation == 'portrait':
-#     width = '576'
-#     height = '1024'
-#     Builder.unload_file('landscape.kv')
-#     Builder.load_file('portrait.kv')
-#     draw_border = True
-
-# Config.set('graphics', 'width', width)
-# Config.set('graphics', 'height', height)
-# Builder.load_file('portrait.kv')
-# width = '576'
-# height = '1024'
-# Config.set('graphics', 'width', width)
-# Config.set('graphics', 'height', height)
-# Builder.load_file('portrait.kv')
-Builder.load_file('landscape.kv')
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.popup import Popup
 
 
 # FREM
 class MainApp(App):
 
     def build(self):
-        return MainGrid()
+        self.app = MainGrid()
+        return self.app
+
+    def on_start(self):
+        self.app.show_warning_popup()
 
 
 colors = [
@@ -60,6 +37,10 @@ colors = [
     '#F5D300',  # yellow
     '#00ff41',  # matrix green
 ]
+
+
+class RotatedImage(Image):
+    angle = NumericProperty()
 
 
 class MainGrid(BoxLayout):
@@ -108,6 +89,46 @@ class MainGrid(BoxLayout):
         self.lines = []
         self.update_plot()
         self.update_equations()
+        self.show_warning_popup()
+
+    def on_start(self):
+        self.show_popup()
+
+    @staticmethod
+    def show_warning_popup():
+        warning = Warning()
+        warning.popupWindow = Popup(title="Caution!", content=warning, separator_height=1, background_color=[0, 0, 0, 0.5])
+        warning.popupWindow.open()
+
+    @staticmethod
+    def show_popup():
+        show = P()  # Create a new instance of the P class
+        show.popupWindow = Popup(title="Info", content=show, separator_height=1, background_color=[0, 0, 0, 0.5])
+        # Create the popup window
+        show.popupWindow.open()  # show the popup
+        show.ids.infoText.text = "[b]Welcome to FREM [/b] \n\n[b]FREM[/b] is a tool to show how frequency modulation " \
+                                 "mathematically works which is also widely used in synthesizers (e.g. vibrato " \
+                                 "effect). For frequency modulation you will need at least two waveforms. One acts " \
+                                 "as [b]Modulating Wave[/b], the other one as [b]Carrier Wave[/b]. This tool provides "\
+                                 "[b]three[/b] waveforms, which means two modulating waves can be applied on one " \
+                                 "carrier wave. \n\n\n[b]How to use FREM?[/b]\n\nFor each waveform it can be switched "\
+                                 "between four types: [b]Sine[/b], [b]Sawtooth[/b], [b]Triangle[/b] and [b]Square[/b]."\
+                                 " Each type has a different formula which will be shown and also can be visualized. " \
+                                 "For a closer look you can also zoom in." \
+                                 "\n\n[b]visible Graph: [/b] visualises the graph of the current selected waveform. " \
+                                 "The graph represents [color=FF0000]one second[/color]. The audio however is rendered"\
+                                 " in realtime as long as it's played. The played audio is not a loop!" \
+                                 "\n\n[b]Modulation Index: [/b] describes the factor, how much the modulation will be "\
+                                 "applied on the carrier wave \n\n[b]calculate F(x): [/b] integrates the formula of " \
+                                 "the selected waveform and enables the [b]Modulation Index[/b] \n\n[b]Carrier Wave: " \
+                                 "[/b] each waveform can be the carrier wave on which the modulating wave will be " \
+                                 "applied. E.g. [color=08F7FE]Modulating Wave[/color] [color=FE53BB]Carrier " \
+                                 "Wave[/color] or [color=FE53BB]Modulating Wave[/color] [color=00ff41]Carrier " \
+                                 "Wave[/color] \n\n[b]Modulating Wave: [/b] each waveform can be also the modulating " \
+                                 "wave except for the [color=00ff41]last one[/color]. " \
+                                 "To apply the modulating wave onto the carrier wave, the discrete integration of the "\
+                                 "waveform needs to be calculated ([b] calculate F(x)[/b] ).\n\n[b]PLAY:[/b] plays " \
+                                 "the carrier wave with it's applied modulation."
 
     def init_max_min(self):
         for wf in self.wf_labels:
@@ -115,7 +136,7 @@ class MainGrid(BoxLayout):
             self.max_minima[wf] = max_minima
 
     def update_zoom(self, value):
-        if value == '+' and self.zoom < 16:
+        if value == '+' and self.zoom < 8:
             self.zoom *= 2
         elif value == '-' and self.zoom > 1:
             self.zoom /= 2
@@ -183,5 +204,11 @@ class MainGrid(BoxLayout):
         if self.width > self.height:
             self.update_equations()
 
+
+class P(FloatLayout):
+    pass
+
+class Warning(FloatLayout):
+    pass
 
 MainApp().run()
