@@ -67,10 +67,11 @@ def hex_to_rgb_array(hex_code):
 
 
 class AudioPlayer:
-    def __init__(self, channels=1, rate=22050, buffer_size=1024, waveforms=[]):
+    def __init__(self, channels=1, rate=22050, buffer_size=1024, fade_seq=256, waveforms=[]):
         super().__init__()
         self.rate = rate
         self.chunk_size = buffer_size
+        self.fade_seq = fade_seq
         self.stream = get_output(channels=channels, rate=rate, buffersize=buffer_size)
         self.sample = AudioSample()
         #self.stream.add_sample(self.sample)
@@ -79,6 +80,7 @@ class AudioPlayer:
         self.playing = False
         self.waveforms = waveforms
         self.chunks = []
+        self.smoother = Smoother(self.fade_seq)
 
     def set_chunk(self, y):
         self.chunk = y
@@ -91,7 +93,7 @@ class AudioPlayer:
     def render_audio(self, pos):
 
         start = pos
-        end = pos + self.chunk_size
+        end = pos + (self.chunk_size + self.fade_seq)
 
         x_audio = np.arange(start, end) / self.rate
         wf_mod = 0
@@ -111,9 +113,11 @@ class AudioPlayer:
         self.playing = True
 
         while self.playing:
-            chunk = self.render_audio(self.pos)
+            # smoothing
+            chunk = self.smoother.smoothTransition(self.render_audio(self.pos))
+            self.smoother.buffer = chunk[-self.fade_seq:]
             self.chunks = np.append(self.chunks, chunk)
-            chunk = self.get_bytes(chunk)
+            chunk = self.get_bytes(chunk[:self.chunk_size])
             self.sample.write(chunk)
             self.pos += self.chunk_size
             if not self.playing:
@@ -258,3 +262,32 @@ class ModulationWave(CarrierWave):
             prefix = r'$\int$ '
         result = LatexNodes2Text().latex_to_text(prefix + current_equation(self.waveform, 'Trigonometric function'))
         self.equation = result
+
+
+class Smoother:
+    def __init__(self, fade_seq):
+        self.fade_seq = fade_seq
+        self._buffer = np.zeros(fade_seq)
+        self.coefficients = np.linspace(0, 1, fade_seq)
+        self.coefficientsR = self.coefficients[::-1]
+
+    @property
+    def buffer(self):
+        return self._buffer
+
+    @buffer.setter
+    def buffer(self, value):
+        size_value = len(value)
+        if size_value == self.fade_seq:
+            self._buffer = value
+        else:
+            raise AttributeError("size of parameter {} doesn't fit size of buffer {}".format(size_value, self.fade_seq))
+
+    # smooths transition between chunks to prevent discontinuities
+    def smoothTransition(self, signal):
+        buffer = [a * b for a, b in zip(self.coefficientsR, self.buffer)]
+        # fade in
+        signal[:self.fade_seq] = [a * b for a, b in zip(self.coefficients, signal[:self.fade_seq])]
+        # add part from previous chunk
+        signal[:self.fade_seq] += buffer
+        return signal

@@ -70,12 +70,18 @@ class MainGrid(BoxLayout):
         self._current_tab = 'WF_M1'
         self.old_tab = ''
         self.equ_color = self.mod_wave_1.color
-        self.player = AudioPlayer(1, 44100, 4096, self.waveforms)
+        self.player = AudioPlayer(1, 44100, 4096, 1024, self.waveforms)
 
-        self.graph_max_y = 1100
-        self.graph_min_y = -76
+        # self.graph_max_y = 1100
+        # self.graph_min_y = -76
+
+        self.graph_max_y = 1024
+        self.graph_min_y = 0
+
+        #tick_color=[0, 1, 1, 0.7]
+        #y_ticks_major=0.275, x_ticks_major=50
         self.graph = Graph(y_ticks_major=0.275, x_ticks_major=50,
-                           border_color=[0, 1, 1, 1], tick_color=[0, 1, 1, 0.5],
+                           border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 0],
                            x_grid=True, y_grid=True, xmin=self.graph_min_y, xmax=self.graph_max_y, ymin=-0.55,
                            ymax=0.55, draw_border=self.draw_border)
 

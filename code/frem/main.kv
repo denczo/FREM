@@ -3,6 +3,10 @@
 #:import threading threading
 #:import builder kivy.lang.Builder
 
+<Button>:
+#    background_normal: ''
+#    background_color: .5, .5, .5, 1
+
 <RotatedImage>:
     canvas.before:
         PushMatrix
@@ -22,12 +26,15 @@
     ScrollView:
         size_hint: 1, 0.8
         pos_hint: {"x":0, "top":0.95}
+        bar_width: 4
+        bar_color: 1, 1, 1, 1
+        bar_inactive_color: 1, 1, 1, 0.5
 
         Label:
             id: infoText
             text: ""
             markup: True
-            size_hint: 1, None
+            size_hint: 0.98, None
             text_size: self.width, None
             height: self.texture_size[1]
 
@@ -64,6 +71,8 @@
 
 <ToggleButton>
     allow_no_selection: False
+    font_size: self.width/4
+
 
 <MainGrid>:
     canvas.before:
@@ -99,7 +108,7 @@
                 orientation: 'vertical'
                 id: info
                 size_hint: 0.05, 1
-                padding: 0,0,5,0
+                padding: 0,5,5,0
 
                 Button:
                     text: '[b]?[/b]'
@@ -129,7 +138,7 @@
                 bar_inactive_color: 1, 1, 1, 0.5
                 scroll_type: ['content']
 
-                canvas.before:
+                canvas.after:
                     Color:
                         rgba: 0, 1, 1, 1
                     Line:
@@ -140,7 +149,7 @@
                     orientation: 'vertical'
                     size_hint: None, 1
                     width: view.width*root.zoom
-
+                    padding: 0, 0, 5, 0
                     BoxLayout:
                         id: modulation
                         size_hint_x: 1
@@ -531,6 +540,8 @@
                         size_hint: 1, 0.2
                         id: play
                         markup: True
+                        font_size: self.width/15
+
                         text: '[b]PLAY[/b]'
                         orientation: 'horizontal'
                         on_release: threading.Thread(target=root.play_result).start()
