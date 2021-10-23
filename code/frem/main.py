@@ -50,10 +50,13 @@ class MainGrid(BoxLayout):
 
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
-        chunk_size = 256
+        self.settings = Settings.best_performance
+        print(self.settings)
+
+        chunk_size = self.settings.chunk_size
         self.builder = Builder
         self.chunk_size = chunk_size
-        self.rate = 11025
+        self.rate = self.settings.sampling_rate
         self.wf_labels = ['Sine', 'Triangle', 'Sawtooth', 'Square Wave']
         self.max_minima = {}
         self.init_max_min()
@@ -67,7 +70,7 @@ class MainGrid(BoxLayout):
         self._current_tab = 'WF_M1'
         self.old_tab = ''
         self.equ_color = self.mod_wave_1.color
-        self.player = AudioPlayer(1, self.rate, 1024, 256, self.waveforms)
+        self.player = AudioPlayer(1, self.rate, self.chunk_size, self.settings.fade_seq, self.waveforms)
         self.graph_max_x = self.chunk_size + 1
         self.graph_min_x = 0
 

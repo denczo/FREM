@@ -1,3 +1,5 @@
+from enum import Enum
+
 import numpy as np
 from kivy.event import EventDispatcher
 from kivy.properties import StringProperty, ObjectProperty
@@ -23,7 +25,7 @@ def normalize(y):
 
 
 def normalize_fixed(y, max, min):
-    #return 2*((y - min) / (max - min)) - 1
+    # return 2*((y - min) / (max - min)) - 1
     return (y - min) / (max - min) - 0.5
 
 
@@ -59,10 +61,10 @@ def hex_to_rgb_array(hex_code):
     if '#' in hex_code:
         start = 1
     end_r = start + end
-    r = int(hex_code[start:end_r], 16)/255
+    r = int(hex_code[start:end_r], 16) / 255
     end_g = end_r + end
-    g = int(hex_code[end_r:end_g], 16)/255
-    b = int(hex_code[end_g:], 16)/255
+    g = int(hex_code[end_r:end_g], 16) / 255
+    b = int(hex_code[end_g:], 16) / 255
     return [r, g, b, 1]
 
 
@@ -74,8 +76,8 @@ class AudioPlayer:
         self.fade_seq = fade_seq
         self.stream = get_output(channels=channels, rate=rate, buffersize=buffer_size, encoding=16)
         self.sample = AudioSample()
-        print("AudioPlayer Chunksize ",self.chunk_size)
-        #self.stream.add_sample(self.sample)
+        print("AudioPlayer Chunksize ", self.chunk_size)
+        # self.stream.add_sample(self.sample)
         self.chunk = None
         self.pos = 0
         self.playing = False
@@ -90,7 +92,7 @@ class AudioPlayer:
     def get_bytes(chunk):
         # chunk is scaled and converted from float32 to int16 bytes
         return (chunk * 32767).astype('int16').tobytes()
-        #return (chunk * 32767).astype('int8').tobytes()
+        # return (chunk * 32767).astype('int8').tobytes()
 
     def render_audio(self, pos):
 
@@ -130,9 +132,40 @@ class AudioPlayer:
         self.sample.stop()
 
 
-class CarrierWave(EventDispatcher):
+class Setting:
 
+    def __init__(self, chunk_size, sampling_rate, fade_seq, realtime_rendering):
+        self._chunk_size = chunk_size
+        self._sampling_rate = sampling_rate
+        self._fade_seq = fade_seq
+        self._realtime_rendering = realtime_rendering
+
+    @property
+    def chunk_size(self):
+        return self._chunk_size
+
+    @property
+    def sampling_rate(self):
+        return self._sampling_rate
+
+    @property
+    def fade_seq(self):
+        return self._fade_seq
+
+    @property
+    def realtime_rendering(self):
+        return self._realtime_rendering
+
+
+class Settings:
+    best_performance = Setting(512, 11025, 256, False)
+    balanced = Setting(512, 22050, 256, False)
+    best_quality = Setting(2048, 44100, 256, True)
+    extreme_quality = Setting(4096, 44100, 512, True)
+
+class CarrierWave(EventDispatcher):
     equation = StringProperty('')
+
     # color = StringProperty('')
 
     def __init__(self, color, chunk_size, waveform='Sine', frequency=1):
@@ -155,8 +188,8 @@ class CarrierWave(EventDispatcher):
     def init_plot(self, color):
         max_width = 2
         end = 2
-        #max_width = 3
-        #end = 5
+        # max_width = 3
+        # end = 5
         for i in range(1, end):
             width = max_width / i
             color[-1] = i / (end - 1)
@@ -196,8 +229,8 @@ class MaxMinima:
         self._global_min = 0
         self.label = waveform
         # min frequency to get a full period in one chunk
-        self.frequency = int(rate/chunk_size+1)
-        self.x_samples = np.arange(0, chunk_size)/rate
+        self.frequency = int(rate / chunk_size + 1)
+        self.x_samples = np.arange(0, chunk_size) / rate
         self.calc_max_min()
 
     def calc_max_min(self):
@@ -207,10 +240,10 @@ class MaxMinima:
         self._global_max = max(integral)
 
     def global_max(self, f=1):
-        return self._global_max/f
+        return self._global_max / f
 
     def global_min(self, f=1):
-        return self._global_min/f
+        return self._global_min / f
 
 
 class ModulationWave(CarrierWave):
