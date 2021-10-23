@@ -7,6 +7,9 @@
 #    background_normal: ''
 #    background_color: .5, .5, .5, 1
 
+#<Label>:
+#    color: 0, 0, 0, 1
+
 <RotatedImage>:
     canvas.before:
         PushMatrix
@@ -26,6 +29,7 @@
     ScrollView:
         size_hint: 1, 0.8
         pos_hint: {"x":0, "top":0.95}
+        do_scroll_x: False
         bar_width: 4
         bar_color: 1, 1, 1, 1
         bar_inactive_color: 1, 1, 1, 0.5
@@ -56,7 +60,7 @@
         id: infoText
         text: "[b]Please lower your volume before using this app! This app let you experiment with audio which can be loud and unpleasant in some cases![/b]"
         markup: True
-        font_size: 20
+#        font_size: 20
         halign: 'center'
         valign: 'middle'
         text_size: self.width, None
@@ -85,7 +89,7 @@
     BoxLayout:
         spacing: 10
         id: box
-        padding: 10
+#        padding: 30
         orientation: 'vertical'
         size_hint: 1, 1
 
@@ -104,6 +108,16 @@
             id: graph
             orientation: 'horizontal'
             size_hint: 1, 0.1
+            padding: 20, 20, 20, 0
+#            canvas.before:
+#                Color:
+##                    rgb: utils.get_color_from_hex('#6270A3')
+#
+##                    rgb: .1, .1, .1, 1
+#                Rectangle:
+#                    pos: self.pos
+#                    size: self.size
+
             BoxLayout:
                 orientation: 'vertical'
                 id: info
@@ -138,12 +152,12 @@
                 bar_inactive_color: 1, 1, 1, 0.5
                 scroll_type: ['content']
 
-                canvas.after:
-                    Color:
-                        rgba: 0, 1, 1, 1
-                    Line:
-                        width: 1.5
-                        rectangle: self.x, self.y, self.width, self.height
+#                canvas.after:
+#                    Color:
+#                        rgba: 0, 1, 1, 1
+#                    Line:
+#                        width: 1.5
+#                        rectangle: self.x, self.y, self.width, self.height
 
                 BoxLayout:
                     orientation: 'vertical'
@@ -181,8 +195,18 @@
         BoxLayout:
             id: panel
             size_hint: 1, 0.2
+            padding: 20, 0, 20, 20
             spacing: 10
-            background_color: (0,0,0,0.2)
+            #background_color: (0,0,0,0.2)
+            canvas.before:
+                Color:
+                    rgb: utils.get_color_from_hex('#202435')
+
+#                    rgb: .1, .1, .1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
 
             #=======================================#
             #         TAB MOD WAVE 1 SIGNAL         #
@@ -190,13 +214,13 @@
             BoxLayout:
                 id: wf_m1
                 text: 'WF I \n(Modulation)'
-                padding: 10
-                canvas.before:
-                    Color:
-                        rgba: .031, .968, .996, 1
-                    Line:
-                        width: 1.5
-                        rectangle: self.x, self.y, self.width, self.height
+#                padding: 1
+#                canvas.before:
+#                    Color:
+#                        rgba: .031, .968, .996, 1
+#                    Line:
+#                        width: 1.5
+#                        rectangle: self.x, self.y, self.width, self.height
 
                 BoxLayout:
                     orientation: 'vertical'
@@ -258,6 +282,7 @@
                         Label:
                             text: 'graph visible'
                             text_size: self.size
+                            font_size: self.width/9
                             valign: 'middle'
                             padding_x: 20
 
@@ -273,6 +298,7 @@
                         Label:
                             text: 'calculate F(x)'
                             text_size: self.size
+                            font_size: self.width/9
                             valign: 'middle'
                             padding_x: 20
 
@@ -292,7 +318,7 @@
                         Slider:
                             id: m1_freq_mod
                             min: 0.125
-                            max: 5
+                            max: 2
                             padding: 30
                             value: 1
                             step: 0.125
@@ -300,14 +326,14 @@
                             on_value: root.update_plot()
 
                         Label:
-                            text: 'Modulation Index: ' + str(int(m1_mod_index.value))
+                            text: 'Modulation Index: ' + str(float(m1_mod_index.value))
 
                         Slider:
                             id: m1_mod_index
-                            min: 0.1
-                            max: 100
+                            min: 0.01
+                            max: 5.0
                             padding: 30
-                            step: 1
+                            step: 0.01
                             disabled: not(m1_int_active.active)
                             on_value: root.mod_wave_1.change_mod_index(m1_mod_index.value)
                             on_value: root.update_plot()
@@ -318,13 +344,19 @@
             BoxLayout:
                 id: wf_m2
                 text: 'WF II \n(Modulation)'
-                padding: 10
-                canvas.before:
-                    Color:
-                        rgba: .996, .325, .733, 1
-                    Line:
-                        width: 1.5
-                        rectangle: self.x, self.y, self.width, self.height
+#                padding: 10
+#                canvas.before:
+#                    Color:
+#                        rgba: .996, .325, .733, 1
+#                    Line:
+#                        width: 1.5
+#                        rectangle: self.x, self.y, self.width, self.height
+#                canvas.before:
+#                    Color:
+#                        rgb: utils.get_color_from_hex('#0B122E')
+#                    Rectangle:
+#                        pos: self.pos
+#                        size: self.size
 
                 BoxLayout:
                     orientation: 'vertical'
@@ -385,6 +417,7 @@
                         Label:
                             text: 'graph visible'
                             text_size: self.size
+                            font_size: self.width/9
                             valign: 'middle'
                             padding_x: 20
 
@@ -400,6 +433,7 @@
                         Label:
                             text: 'calculate F(x)'
                             text_size: self.size
+                            font_size: self.width/9
                             valign: 'middle'
                             padding_x: 20
 
@@ -431,7 +465,7 @@
                         Slider:
                             id: m2_mod_index
                             min: 0.1
-                            max: 500
+                            max: 100
                             padding: 30
                             step: 1
                             disabled: not(m2_int_active.active)
@@ -444,13 +478,22 @@
             BoxLayout:
                 id: car
                 text: 'WF III \n(Carrier)'
-                padding: 10
-                canvas.before:
-                    Color:
-                        rgba: 0, 1, .254, 1
-                    Line:
-                        width: 1.5
-                        rectangle: self.x, self.y, self.width, self.height
+#                padding: 0, 0, 0 , 55
+#                canvas.before:
+
+#                   Color:
+#            rgb: utils.get_color_from_hex('#212946')
+#        Rectangle:
+#            pos: self.pos
+#            size: self.size
+#                    Color:
+#                        rgba: 0, 1, .254, 0.05
+#                    Rectangle:
+#                        pos: self.x, self.y
+#                        size: self.width, self.height
+#                    Line:
+#                        width: 1.5
+#                        rectangle: self.x, self.y, self.width, self.height
 
 
                 BoxLayout:
@@ -511,15 +554,18 @@
 
                         Label:
                             text: 'graph visible'
+                            font_size: self.width/9
 
                         Switch:
                             id: car_visible
                             on_active: root.carrier.graph_active = car_visible.active
                             on_active: root.update_plot()
 
+                    BoxLayout:
+                        size_hint: 1, 0.2
 
                     BoxLayout:
-                        size_hint: 1, 0.4
+                        size_hint: 1, 0.3
                         orientation: 'vertical'
 
                         Label:
@@ -528,13 +574,16 @@
                         Slider:
                             id: freq_car
                             min: 0
-                            max: 500
+                            max: 250
                             padding: 30
                             value: 4
                             disabled: not(car_visible.active)
                             step: 1
                             on_value: root.carrier.change_frequency(freq_car.value)
                             on_value: root.update_plot()
+
+                    BoxLayout:
+                        size_hint: 1, 0.1
 
                     ToggleButton:
                         size_hint: 1, 0.2

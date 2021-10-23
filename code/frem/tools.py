@@ -72,8 +72,9 @@ class AudioPlayer:
         self.rate = rate
         self.chunk_size = buffer_size
         self.fade_seq = fade_seq
-        self.stream = get_output(channels=channels, rate=rate, buffersize=buffer_size)
+        self.stream = get_output(channels=channels, rate=rate, buffersize=buffer_size, encoding=16)
         self.sample = AudioSample()
+        print("AudioPlayer Chunksize ",self.chunk_size)
         #self.stream.add_sample(self.sample)
         self.chunk = None
         self.pos = 0
@@ -89,6 +90,7 @@ class AudioPlayer:
     def get_bytes(chunk):
         # chunk is scaled and converted from float32 to int16 bytes
         return (chunk * 32767).astype('int16').tobytes()
+        #return (chunk * 32767).astype('int8').tobytes()
 
     def render_audio(self, pos):
 
@@ -151,8 +153,10 @@ class CarrierWave(EventDispatcher):
         self.render_equation()
 
     def init_plot(self, color):
-        max_width = 3
-        end = 5
+        max_width = 2
+        end = 2
+        #max_width = 3
+        #end = 5
         for i in range(1, end):
             width = max_width / i
             color[-1] = i / (end - 1)
@@ -231,12 +235,10 @@ class ModulationWave(CarrierWave):
 
     def render_wf(self):
         if self.int_active:
-            #self.symbol = 'F(x)'
             # label, a = amplitude, f = frequency, x = samples, c = constant, m = modulation wave
             self.y = current_trigon_wf(self.waveform, 0.5, self.frequency, self.x, 0, self.mod_wave)
             self.y = self.discrete_integration(self.y)
         else:
-            #self.symbol = 'f(x)'
             # label, a = amplitude, f = frequency, x = samples, c = constant, m = modulation wave
             self.y = current_trigon_wf(self.waveform, 0.5, self.frequency, self.x, 0, self.mod_wave)
 

@@ -1,27 +1,24 @@
 import os
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
-from time import sleep
-
 from kivy.uix.image import Image
-from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 import kivy
-from kivy.core.window import Window
-
-kivy.require('2.0.0')
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy_garden.graph import Graph, LinePlot
-from pylatexenc.latex2text import LatexNodes2Text
-from kivy.properties import StringProperty, NumericProperty, ObjectProperty
-from kivy.config import Config
+from kivy.properties import NumericProperty
 from tools import *
 from kivy.lang import Builder
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.popup import Popup
+kivy.require('2.0.0')
 
 
 # FREM
 class MainApp(App):
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.app = None
 
     def build(self):
         self.app = MainGrid()
@@ -53,10 +50,10 @@ class MainGrid(BoxLayout):
 
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
-        chunk_size = 1024
+        chunk_size = 256
         self.builder = Builder
         self.chunk_size = chunk_size
-        self.rate = 44100
+        self.rate = 11025
         self.wf_labels = ['Sine', 'Triangle', 'Sawtooth', 'Square Wave']
         self.max_minima = {}
         self.init_max_min()
@@ -70,21 +67,14 @@ class MainGrid(BoxLayout):
         self._current_tab = 'WF_M1'
         self.old_tab = ''
         self.equ_color = self.mod_wave_1.color
-        self.player = AudioPlayer(1, 44100, 4096, 1024, self.waveforms)
+        self.player = AudioPlayer(1, self.rate, 1024, 256, self.waveforms)
+        self.graph_max_x = self.chunk_size + 1
+        self.graph_min_x = 0
 
-        # self.graph_max_y = 1100
-        # self.graph_min_y = -76
-
-        self.graph_max_y = 1024
-        self.graph_min_y = 0
-
-        #tick_color=[0, 1, 1, 0.7]
-        #y_ticks_major=0.275, x_ticks_major=50
-        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=50,
-                           border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 0],
-                           x_grid=True, y_grid=True, xmin=self.graph_min_y, xmax=self.graph_max_y, ymin=-0.55,
-                           ymax=0.55, draw_border=self.draw_border)
-
+        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=self.chunk_size/8, x_grid_label=True,
+                           border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 1],
+                           x_grid=True, y_grid=True, xmin=self.graph_min_x, xmax=self.graph_max_x, ymin=-0.55,
+                           ymax=0.56, draw_border=self.draw_border)
         self.chunk_size = chunk_size
         self.plot_x = np.linspace(0, 1, self.chunk_size)
         self.plot_y = np.zeros(self.chunk_size)
@@ -144,8 +134,10 @@ class MainGrid(BoxLayout):
     def update_zoom(self, value):
         if value == '+' and self.zoom < 8:
             self.zoom *= 2
+            self.graph.x_ticks_major /= 2
         elif value == '-' and self.zoom > 1:
             self.zoom /= 2
+            self.graph.x_ticks_major *= 2
 
     @property
     def current_tab(self):
@@ -214,7 +206,9 @@ class MainGrid(BoxLayout):
 class P(FloatLayout):
     pass
 
+
 class Warning(FloatLayout):
     pass
+
 
 MainApp().run()
