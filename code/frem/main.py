@@ -50,20 +50,52 @@ class MainGrid(BoxLayout):
 
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
-        self.settings = Settings.best_performance
-        print(self.settings)
-
+        self.settings = Settings.best_quality
         chunk_size = self.settings.chunk_size
         self.builder = Builder
         self.chunk_size = chunk_size
         self.rate = self.settings.sampling_rate
         self.wf_labels = ['Sine', 'Triangle', 'Sawtooth', 'Square Wave']
         self.max_minima = {}
+        self.setup()
+        # self.init_max_min()
+        # self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size, max_minima=self.max_minima)
+        # self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size,
+        #                                  max_minima=self.max_minima, frequency=2)
+        # self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size, frequency=4)
+        # self.draw_border = False
+        #
+        # self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
+        # self._current_tab = 'WF_M1'
+        # self.old_tab = ''
+        # self.equ_color = self.mod_wave_1.color
+        # self.player = AudioPlayer(1, self.rate, self.chunk_size, self.settings.fade_seq, self.waveforms)
+        # self.graph_max_x = self.chunk_size + 1
+        # self.graph_min_x = 0
+        # self.graph = Graph(y_ticks_major=0.275, x_ticks_major=self.chunk_size/8, x_grid_label=True,
+        #                    border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 1],
+        #                    x_grid=True, y_grid=True, xmin=self.graph_min_x, xmax=self.graph_max_x, ymin=-0.55,
+        #                    ymax=0.56, draw_border=self.draw_border)
+        # self.plot_x = np.linspace(0, 1, self.chunk_size)
+        # self.plot_y = np.zeros(self.chunk_size)
+        #
+        # self.ids.modulation.add_widget(self.graph)
+        # self.formula = ''
+        # self.old_formula = ''
+        # self.lines = []
+        # self.update_plot()
+        # self.update_equations()
+        self.show_warning_popup()
+
+    def on_start(self):
+        self.show_popup()
+
+    def setup(self):
         self.init_max_min()
-        self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size, max_minima=self.max_minima)
-        self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size,
+        self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=self.chunk_size, max_minima=self.max_minima)
+        self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=self.chunk_size,
                                          max_minima=self.max_minima, frequency=2)
-        self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size, frequency=4)
+        self.carrier = CarrierWave('#00ff41', chunk_size=self.chunk_size, frequency=4)
         self.draw_border = False
 
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
@@ -73,12 +105,10 @@ class MainGrid(BoxLayout):
         self.player = AudioPlayer(1, self.rate, self.chunk_size, self.settings.fade_seq, self.waveforms)
         self.graph_max_x = self.chunk_size + 1
         self.graph_min_x = 0
-
-        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=self.chunk_size/8, x_grid_label=True,
+        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=self.chunk_size / 8, x_grid_label=True,
                            border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 1],
                            x_grid=True, y_grid=True, xmin=self.graph_min_x, xmax=self.graph_max_x, ymin=-0.55,
                            ymax=0.56, draw_border=self.draw_border)
-        self.chunk_size = chunk_size
         self.plot_x = np.linspace(0, 1, self.chunk_size)
         self.plot_y = np.zeros(self.chunk_size)
 
@@ -88,10 +118,13 @@ class MainGrid(BoxLayout):
         self.lines = []
         self.update_plot()
         self.update_equations()
-        self.show_warning_popup()
 
-    def on_start(self):
-        self.show_popup()
+
+    @staticmethod
+    def show_hint():
+        hint = Hint()
+        hint.popupWindow = Popup(title="Hint!", content=hint, separator_height=1, background_color=[0, 0, 0, 0.5])
+        hint.popupWindow.open()
 
     @staticmethod
     def show_warning_popup():
@@ -142,6 +175,28 @@ class MainGrid(BoxLayout):
             self.zoom /= 2
             self.graph.x_ticks_major *= 2
 
+    def change_settings(self, value):
+        if value == "Performance":
+            self.settings = Settings.best_performance
+        elif value == "Balanced":
+            self.settings = Settings.balanced
+        elif value == "Quality":
+            self.settings = Settings.best_quality
+        elif value == "Extreme":
+            self.settings = Settings.extreme_quality
+        self.ids.modulation.remove_widget(self.graph)
+        self.graph.clear_widgets()
+        self.apply_settings()
+        self.player.end()
+        del self.player
+
+        self.setup()
+
+    def apply_settings(self):
+        self.chunk_size = self.settings.chunk_size
+        self.rate = self.settings.sampling_rate
+        self.fade_seq = self.settings.fade_seq
+
     @property
     def current_tab(self):
         return self._current_tab
@@ -174,6 +229,7 @@ class MainGrid(BoxLayout):
             self.old_tab = self.current_tab
 
     def play_result(self):
+        print("still running")
         if self.ids.play.state == 'down':
             self.player.run()
         else:
@@ -211,6 +267,10 @@ class P(FloatLayout):
 
 
 class Warning(FloatLayout):
+    pass
+
+
+class Hint(FloatLayout):
     pass
 
 

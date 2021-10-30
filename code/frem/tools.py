@@ -1,5 +1,6 @@
 from enum import Enum
 
+import audiostream
 import numpy as np
 from kivy.event import EventDispatcher
 from kivy.properties import StringProperty, ObjectProperty
@@ -77,6 +78,7 @@ class AudioPlayer:
         self.stream = get_output(channels=channels, rate=rate, buffersize=buffer_size, encoding=16)
         self.sample = AudioSample()
         print("AudioPlayer Chunksize ", self.chunk_size)
+        print("Sampling Rate ",self.rate)
         # self.stream.add_sample(self.sample)
         self.chunk = None
         self.pos = 0
@@ -87,6 +89,11 @@ class AudioPlayer:
 
     def set_chunk(self, y):
         self.chunk = y
+
+    def end(self):
+        self.stop()
+        del self.stream
+        del self.sample
 
     @staticmethod
     def get_bytes(chunk):
@@ -115,6 +122,7 @@ class AudioPlayer:
         self.stream.add_sample(self.sample)
         self.sample.play()
         self.playing = True
+        print("still running")
 
         while self.playing:
             # smoothing
@@ -124,6 +132,7 @@ class AudioPlayer:
             chunk = self.get_bytes(chunk[:self.chunk_size])
             self.sample.write(chunk)
             self.pos += self.chunk_size
+            # print("still running")
             if not self.playing:
                 self.sample.stop()
 
@@ -162,6 +171,7 @@ class Settings:
     balanced = Setting(512, 22050, 256, False)
     best_quality = Setting(2048, 44100, 256, True)
     extreme_quality = Setting(4096, 44100, 512, True)
+
 
 class CarrierWave(EventDispatcher):
     equation = StringProperty('')

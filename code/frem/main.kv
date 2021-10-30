@@ -7,8 +7,9 @@
 #    background_normal: ''
 #    background_color: .5, .5, .5, 1
 
-#<Label>:
-#    color: 0, 0, 0, 1
+<ToggleButton>
+    allow_no_selection: False
+    font_size: self.width/4
 
 <RotatedImage>:
     canvas.before:
@@ -19,6 +20,26 @@
             origin: root.center
     canvas.after:
         PopMatrix
+<Hint>:
+
+    Label:
+        id: infoText
+        text: "[b]Changes will be affected after next restart![/b]"
+        markup: True
+    #        font_size: 20
+        halign: 'center'
+        valign: 'middle'
+        text_size: self.width, None
+        height: self.texture_size[1]
+
+    Button:
+        text: "Close"
+        size_hint: 0.2, 0.1
+        pos_hint: {"x":0.4, "y":0.0}
+        on_release: root.popupWindow.dismiss()
+
+
+
 
 <P>:
     Image:
@@ -42,12 +63,68 @@
             text_size: self.width, None
             height: self.texture_size[1]
 
-    Button:
-        text: "Close"
-        size_hint: 0.2, 0.1
-        pos_hint: {"x":0.4, "y":0.0}
-        on_release: root.popupWindow.dismiss()
+#    Button:
+#        text: "Close"
+#        size_hint: 0.2, 0.1
+#        pos_hint: {"x":0.4, "y":0.0}
+#        on_release: root.popupWindow.dismiss()
 
+    BoxLayout:
+#        text_size: self.width, 2
+
+        size_hint: 1, 0.1
+#        pos_hint: {"x":0.4, "y":0.0}
+
+        Button:
+            text: "Close"
+            size_hint: 0.2, 1
+#            pos_hint: {"x":0.4, "y":0.0}
+
+            on_release: root.popupWindow.dismiss()
+
+        BoxLayout:
+            size_hint: 0.3, 1
+
+            Label:
+                text: "Settings:"
+
+        BoxLayout:
+            size_hint: 0.5, 0.5
+            ToggleButton:
+                size_hint: 0.2, 1
+
+                text: 'Low'
+                group: 'settings'
+                orientation: 'horizontal'
+                state: 'down'
+                on_press: app.get_running_app().root.change_settings('Performance')
+                on_press: app.get_running_app().root.show_hint()
+
+            ToggleButton:
+                size_hint: 0.2, 1
+                text: 'Medium'
+                group: 'settings'
+                orientation: 'horizontal'
+                on_press: app.get_running_app().root.change_settings('Balanced')
+                on_press: app.get_running_app().root.show_hint()
+
+            ToggleButton:
+                size_hint: 0.2, 1
+
+                text: 'High'
+                group: 'settings'
+                orientation: 'horizontal'
+                on_press: app.get_running_app().root.change_settings('Quality')
+                on_press: app.get_running_app().root.show_hint()
+
+            ToggleButton:
+                size_hint: 0.2, 1
+
+                text: 'Extreme'
+                group: 'settings'
+                orientation: 'horizontal'
+                on_press: app.get_running_app().root.change_settings('Extreme')
+                on_press: app.get_running_app().root.show_hint()
 <Warning>:
     padding: 10
 
@@ -72,10 +149,6 @@
         pos_hint: {"x":0.4, "y":0.0}
         on_release: root.popupWindow.dismiss()
 
-
-<ToggleButton>
-    allow_no_selection: False
-    font_size: self.width/4
 
 
 <MainGrid>:
