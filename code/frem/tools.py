@@ -1,9 +1,6 @@
-from enum import Enum
-
-import audiostream
 import numpy as np
 from kivy.event import EventDispatcher
-from kivy.properties import StringProperty, ObjectProperty
+from kivy.properties import StringProperty
 from kivy_garden.graph import LinePlot
 from pylatexenc.latex2text import LatexNodes2Text
 
@@ -45,15 +42,15 @@ def amp_modulation(amp, y):
     return amp * y
 
 
-def current_equation(label, title):
+def current_equation(label, modulated):
     if label == 'Sine':
-        return Sine.equation_trigon()
+        return Sine.equation_trigon(modulated)
     elif label == 'Triangle':
-        return Triangle.equation_trigon()
+        return Triangle.equation_trigon(modulated)
     elif label == 'Sawtooth':
-        return Sawtooth.equation_trigon()
+        return Sawtooth.equation_trigon(modulated)
     elif label == 'Square Wave':
-        return SquareWave.equation_trigon()
+        return SquareWave.equation_trigon(modulated)
 
 
 def hex_to_rgb_array(hex_code):
@@ -126,7 +123,7 @@ class AudioPlayer:
 
         while self.playing:
             # smoothing
-            chunk = self.smoother.smoothTransition(self.render_audio(self.pos))
+            chunk = self.smoother.smooth_transition(self.render_audio(self.pos))
             self.smoother.buffer = chunk[-self.fade_seq:]
             self.chunks = np.append(self.chunks, chunk)
             chunk = self.get_bytes(chunk[:self.chunk_size])
@@ -229,7 +226,7 @@ class CarrierWave(EventDispatcher):
         return current_trigon_wf(self.waveform, 0.5, self.frequency, x_audio, 0, m)
 
     def render_equation(self):
-        self.equation = LatexNodes2Text().latex_to_text(current_equation(self.waveform, 'Trigonometric function'))
+        self.equation = LatexNodes2Text().latex_to_text(current_equation(self.waveform, False))
 
 
 class MaxMinima:
@@ -305,7 +302,7 @@ class ModulationWave(CarrierWave):
         prefix = ''
         if self.int_active:
             prefix = r'$\int$ '
-        result = LatexNodes2Text().latex_to_text(prefix + current_equation(self.waveform, 'Trigonometric function'))
+        result = LatexNodes2Text().latex_to_text(prefix + current_equation(self.waveform, self.int_active))
         self.equation = result
 
 
@@ -329,7 +326,7 @@ class Smoother:
             raise AttributeError("size of parameter {} doesn't fit size of buffer {}".format(size_value, self.fade_seq))
 
     # smooths transition between chunks to prevent discontinuities
-    def smoothTransition(self, signal):
+    def smooth_transition(self, signal):
         buffer = [a * b for a, b in zip(self.coefficientsR, self.buffer)]
         # fade in
         signal[:self.fade_seq] = [a * b for a, b in zip(self.coefficients, signal[:self.fade_seq])]

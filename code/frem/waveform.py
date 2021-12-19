@@ -10,8 +10,11 @@ class Sawtooth:
     # a = amplitude, f = frequency, x = samples
 
     @staticmethod
-    def equation_trigon():
-        return r'$-2a/\pi + 1/\pi \ \arctan(1/(\tan(2\pi f/2 x))) + C$'
+    def equation_trigon(modulated):
+        infix = ""
+        if modulated:
+            infix = " + m"
+        return r'$-2a/\pi + 1/\pi \ \arctan(1/(\tan(2\pi f/2 x'+infix+')))$'
 
 
 class SquareWave:
@@ -22,8 +25,11 @@ class SquareWave:
         return a * np.sign(np.sin(2*np.pi * f * x + m)) + c
 
     @staticmethod
-    def equation_trigon():
-        return r'$a sign(\sin(2\pi f x)) + C $'
+    def equation_trigon(modulated):
+        infix = ""
+        if modulated:
+            infix = " + m"
+        return r'$a sign(\sin(2\pi f x'+infix+'))$'
 
 
 class Triangle:
@@ -34,8 +40,11 @@ class Triangle:
         return 2 * a / np.pi * np.arcsin(np.sin(2 * np.pi * f * x - np.pi/2 + m)) + c
 
     @staticmethod
-    def equation_trigon():
-        return r'$2a/\pi \ \arcsin(\sin(2\pi f x - \pi/2)) + C$'
+    def equation_trigon(modulated):
+        infix = ""
+        if modulated:
+            infix = " + m"
+        return r'$2a/\pi \ \arcsin(\sin(2\pi f x - \pi/2'+infix+'))$'
 
 
 class Sine:
@@ -46,6 +55,9 @@ class Sine:
         return a * np.sin(2 * np.pi * f * x - np.pi/2 + m) + c
 
     @staticmethod
-    def equation_trigon():
-        return r'$a \sin(2\pi f x - \pi/2) + C$'
+    def equation_trigon(modulated):
+        infix = ""
+        if modulated:
+            infix = " + m"
+        return r'$a \sin(2\pi f x - \pi/2'+infix+')$'
 
