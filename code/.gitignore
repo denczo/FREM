@@ -3,3 +3,4 @@ build
 .buildozer
 dist
 *.xml
+**/.idea/
