@@ -12,8 +12,9 @@ from kivy.properties import NumericProperty, ObjectProperty
 from tools import *
 from kivy.lang import Builder
 from kivy.uix.floatlayout import FloatLayout
+from kivy.config import Config
 from kivy.uix.popup import Popup
-
+Config.read('config/settings.ini')
 
 kivy.require('2.0.0')
 
@@ -28,6 +29,11 @@ class MainApp(App):
     def build(self):
         self.app = MainGrid()
         return self.app
+
+    def restart(self):
+        self.root.clear_widgets()
+        self.stop()
+        return MainApp().run()
 
     def on_start(self):
         self.app.show_warning_popup()
@@ -56,6 +62,8 @@ class MainGrid(BoxLayout):
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
         self.settings = Settings.best_performance
+        #self.settings = Config.get('settings', 'quality')
+        self.change_settings(Config.get('settings', 'quality'))
         chunk_size = self.settings.chunk_size
         self.builder = Builder
         self.chunk_size = chunk_size
@@ -196,6 +204,11 @@ class MainGrid(BoxLayout):
             self.zoom /= 2
             self.graph.x_ticks_major *= 2
 
+    def audio_settings(self, value):
+        Config.set('settings', 'quality', value)
+        Config.write()
+        App.get_running_app().restart()
+
     def change_settings(self, value):
         if value == "Performance":
             self.settings = Settings.best_performance
@@ -205,13 +218,13 @@ class MainGrid(BoxLayout):
             self.settings = Settings.best_quality
         elif value == "Extreme":
             self.settings = Settings.extreme_quality
-        self.ids.modulation.remove_widget(self.graph)
-        self.graph.clear_widgets()
-        self.apply_settings()
-        self.player.end()
-        del self.player
-
-        self.setup()
+        # self.ids.modulation.remove_widget(self.graph)
+        # self.graph.clear_widgets()
+        # self.apply_settings()
+        # self.player.end()
+        # del self.player
+        #
+        # self.setup()
 
     def apply_settings(self):
         self.chunk_size = self.settings.chunk_size

@@ -201,7 +201,7 @@
                 group: 'settings'
                 orientation: 'horizontal'
                 state: 'down'
-                on_press: app.get_running_app().root.change_settings('Performance')
+                on_press: app.get_running_app().root.audio_settings('Performance')
                 on_press: app.get_running_app().root.show_hint()
 
             ToggleButton:
@@ -209,7 +209,7 @@
                 text: 'Medium'
                 group: 'settings'
                 orientation: 'horizontal'
-                on_press: app.get_running_app().root.change_settings('Balanced')
+                on_press: app.get_running_app().root.audio_settings('Balanced')
                 on_press: app.get_running_app().root.show_hint()
 
             ToggleButton:
@@ -218,7 +218,7 @@
                 text: 'High'
                 group: 'settings'
                 orientation: 'horizontal'
-                on_press: app.get_running_app().root.change_settings('Quality')
+                on_press: app.get_running_app().root.audio_settings('Quality')
                 on_press: app.get_running_app().root.show_hint()
 
             ToggleButton:
@@ -227,5 +227,5 @@
                 text: 'Extreme'
                 group: 'settings'
                 orientation: 'horizontal'
-                on_press: app.get_running_app().root.change_settings('Extreme')
+                on_press: app.get_running_app().root.audio_settings('Extreme')
                 on_press: app.get_running_app().root.show_hint()
