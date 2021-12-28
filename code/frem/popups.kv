@@ -62,14 +62,14 @@
         on_release: root.popupWindow.dismiss()
 
 <Info>:
-    Image:
-        source: 'logo/frem_logo_font.png'
-        size_hint: 1, 0.15
-        pos_hint: {"x":0.45, "top":1.12}
+#    Image:
+#        source: 'logo/frem_logo_font.png'
+#        size_hint: 1, 0.15
+#        pos_hint: {"x":0.45, "top":1.12}
 
     ScrollView:
-        size_hint: 1, 0.85
-        pos_hint: {"x":0, "top":0.95}
+        size_hint: 1, 1
+        pos_hint: {"x":0, "top":1.05}
         do_scroll_x: False
         spacing:110
         bar_width: 4
@@ -128,7 +128,7 @@
                 text_size: self.width, None
                 height: self.texture_size[1]
 
-            Image:
+            AsyncImage:
                 id: gif
                 source: './animations/setFreqMod.zip'
                 keep_ratio: True

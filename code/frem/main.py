@@ -1,6 +1,8 @@
 import os
 
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
+from kivy.uix.modalview import ModalView
+
 os.environ["KIVY_IMAGE"] = "pil,sdl2"
 
 from kivy.uix.image import Image, AsyncImage
@@ -31,7 +33,9 @@ class MainApp(App):
         return self.app
 
     def restart(self):
+        self.app.clear_widgets()
         self.root.clear_widgets()
+        self.root.canvas.clear()
         self.stop()
         return MainApp().run()
 
@@ -162,10 +166,11 @@ class MainGrid(BoxLayout):
     @staticmethod
     def show_info():
         info = Info()  # Create a new instance of the P class
-        info.popupWindow = Popup(title="Info", content=info, separator_height=1, background_color=[0, 0, 0, 0.5])
+        #info.popupWindow = Popup(title="Info", content=info, separator_height=1, background_color=[0, 0, 0, 0.5])
+        info.popupWindow = Popup(title="", content=info, separator_height=0, background_color=[0, 0, 0, 0.5])
         # Create the popup window
         info.popupWindow.open()  # show the popup
-        info.ids.infoText_p1.text = "[b]Welcome to FREM [/b] \n\n[b]FREM[/b] is a tool to show how frequency modulation"\
+        info.ids.infoText_p1.text = "\n\n[b]Welcome to FREM [/b] \n\n[b]FREM[/b] is a tool to show how frequency modulation"\
                                  " mathematically works which is also widely used in synthesizers (e.g. vibrato " \
                                  "effect). For frequency modulation you will need at least two waveforms. One acts " \
                                  "as [b]Modulating Wave[/b], the other one as [b]Carrier Wave[/b]. This tool provides "\
@@ -207,7 +212,7 @@ class MainGrid(BoxLayout):
     def audio_settings(self, value):
         Config.set('settings', 'quality', value)
         Config.write()
-        App.get_running_app().restart()
+        #App.get_running_app().restart()
 
     def change_settings(self, value):
         if value == "Performance":
