@@ -3,6 +3,7 @@
 #:import threading threading
 #:import builder kivy.lang.Builder
 #:include popups.kv
+#:include popups/settings.kv
 
 <Button>:
 #    background_normal: ''
@@ -74,6 +75,12 @@
                     height: self.width
                     on_release: root.show_info()
 
+                Button:
+                    text: '[b]S[/b]'
+                    markup: True
+                    size_hint_y: None
+                    height: self.width
+                    on_release: root.show_settings()
 
                 RotatedImage:
                     angle: 90

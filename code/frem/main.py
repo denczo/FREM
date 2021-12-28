@@ -40,7 +40,11 @@ class MainApp(App):
         return MainApp().run()
 
     def on_start(self):
-        self.app.show_warning_popup()
+        status = Config.getint('settings', 'first_start')
+        if status:
+            self.app.show_warning_popup()
+            Config.set('settings', 'first_start', 0)
+            Config.write()
 
 
 colors = [
@@ -66,7 +70,6 @@ class MainGrid(BoxLayout):
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
         self.settings = Settings.best_performance
-        #self.settings = Config.get('settings', 'quality')
         self.change_settings(Config.get('settings', 'quality'))
         chunk_size = self.settings.chunk_size
         self.builder = Builder
@@ -151,6 +154,13 @@ class MainGrid(BoxLayout):
         warning.popupWindow = Popup(title="Caution!", content=warning, separator_height=1,
                                     background_color=[0, 0, 0, 0.5])
         warning.popupWindow.open()
+
+    @staticmethod
+    def show_settings():
+        settingsPage = SettingsPage()
+        settingsPage.popupWindow = Popup(title="Settings", content=settingsPage, separator_height=1,
+                                    background_color=[0, 0, 0, 0.5])
+        settingsPage.popupWindow.open()
 
     @staticmethod
     def show_tutorial():
@@ -302,6 +312,10 @@ class MainGrid(BoxLayout):
 
 
 class Info(FloatLayout):
+    pass
+
+
+class SettingsPage(FloatLayout):
     pass
 
 

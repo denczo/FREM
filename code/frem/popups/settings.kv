@@ -1,0 +1,43 @@
+<ToggleButton>:
+    pos_hint: {"x":0.3, "y":0.0}
+    size_hint: 0.4, 1
+
+<SettingsPage>:
+
+    BoxLayout:
+        orientation: 'vertical'
+        spacing: 20
+        padding: 100
+
+        ToggleButton:
+            text: 'Low'
+            group: 'settings'
+            state: 'down'
+            on_press: app.get_running_app().root.audio_settings('Performance')
+            on_press: app.get_running_app().root.show_hint()
+
+        ToggleButton:
+            text: 'Medium'
+            group: 'settings'
+            on_press: app.get_running_app().root.audio_settings('Balanced')
+            on_press: app.get_running_app().root.show_hint()
+
+        ToggleButton:
+            text: 'High'
+            group: 'settings'
+            on_press: app.get_running_app().root.audio_settings('Quality')
+            on_press: app.get_running_app().root.show_hint()
+
+        ToggleButton:
+            text: 'Extreme'
+            group: 'settings'
+            on_press: app.get_running_app().root.audio_settings('Extreme')
+            on_press: app.get_running_app().root.show_hint()
+
+
+    Button:
+        text: "Close"
+        size_hint: 0.2, 0.1
+        pos_hint: {"x":0.4, "y":0.0}
+
+        on_release: root.popupWindow.dismiss()
