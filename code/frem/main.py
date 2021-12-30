@@ -67,7 +67,6 @@ class MainGrid(BoxLayout):
     mod_wave_2 = ObjectProperty(ModulationWave)
     carrier = ObjectProperty(CarrierWave)
     settings = ObjectProperty(Settings)
-    god_mode = BooleanProperty(False)
 
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
@@ -85,7 +84,6 @@ class MainGrid(BoxLayout):
         self.draw_border = None
         self.settings = Settings.best_performance
         self.change_settings(Config.get('settings', 'quality'))
-        self.god_mode = Config.get('settings', 'god_mode')
         chunk_size = self.settings.chunk_size
         self.builder = Builder
         self.chunk_size = chunk_size
