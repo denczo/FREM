@@ -12,6 +12,7 @@
 <ToggleButton>
     allow_no_selection: False
     font_size: self.width/4
+
 <RotatedImage>:
     canvas.before:
         PushMatrix
@@ -21,6 +22,8 @@
             origin: root.center
     canvas.after:
         PopMatrix
+        Color:
+            rgba: (1,1,1,0)
 
 <MainGrid>:
     canvas.before:
@@ -53,14 +56,6 @@
             orientation: 'horizontal'
             size_hint: 1, 0.1
             padding: 20, 20, 20, 0
-#            canvas.before:
-#                Color:
-##                    rgb: utils.get_color_from_hex('#6270A3')
-#
-##                    rgb: .1, .1, .1, 1
-#                Rectangle:
-#                    pos: self.pos
-#                    size: self.size
 
             BoxLayout:
                 orientation: 'vertical'
@@ -87,6 +82,7 @@
                     source: 'logo/frem_logo_font.png'
                     size_hint: 2, 2
                     pos_hint: {"x":-0.5 , "y":0.0}
+                    opacity: 0.2
 
 
             # modulation signal
@@ -101,13 +97,6 @@
                 bar_color: 1, 1, 1, 1
                 bar_inactive_color: 1, 1, 1, 0.5
                 scroll_type: ['content']
-
-#                canvas.after:
-#                    Color:
-#                        rgba: 0, 1, 1, 1
-#                    Line:
-#                        width: 1.5
-#                        rectangle: self.x, self.y, self.width, self.height
 
                 BoxLayout:
                     orientation: 'vertical'
@@ -164,13 +153,6 @@
             BoxLayout:
                 id: wf_m1
                 text: 'WF I \n(Modulation)'
-#                padding: 1
-#                canvas.before:
-#                    Color:
-#                        rgba: .031, .968, .996, 1
-#                    Line:
-#                        width: 1.5
-#                        rectangle: self.x, self.y, self.width, self.height
 
                 BoxLayout:
                     orientation: 'vertical'
@@ -294,19 +276,6 @@
             BoxLayout:
                 id: wf_m2
                 text: 'WF II \n(Modulation)'
-#                padding: 10
-#                canvas.before:
-#                    Color:
-#                        rgba: .996, .325, .733, 1
-#                    Line:
-#                        width: 1.5
-#                        rectangle: self.x, self.y, self.width, self.height
-#                canvas.before:
-#                    Color:
-#                        rgb: utils.get_color_from_hex('#0B122E')
-#                    Rectangle:
-#                        pos: self.pos
-#                        size: self.size
 
                 BoxLayout:
                     orientation: 'vertical'
@@ -428,23 +397,6 @@
             BoxLayout:
                 id: car
                 text: 'WF III \n(Carrier)'
-#                padding: 0, 0, 0 , 55
-#                canvas.before:
-
-#                   Color:
-#            rgb: utils.get_color_from_hex('#212946')
-#        Rectangle:
-#            pos: self.pos
-#            size: self.size
-#                    Color:
-#                        rgba: 0, 1, .254, 0.05
-#                    Rectangle:
-#                        pos: self.x, self.y
-#                        size: self.width, self.height
-#                    Line:
-#                        width: 1.5
-#                        rectangle: self.x, self.y, self.width, self.height
-
 
                 BoxLayout:
                     orientation: 'vertical'
@@ -540,7 +492,6 @@
                         id: play
                         markup: True
                         font_size: self.width/15
-
                         text: '[b]PLAY[/b]'
                         orientation: 'horizontal'
                         on_release: threading.Thread(target=root.play_result).start()

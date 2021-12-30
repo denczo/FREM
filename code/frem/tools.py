@@ -140,11 +140,12 @@ class AudioPlayer:
 
 class Setting:
 
-    def __init__(self, chunk_size, sampling_rate, fade_seq, realtime_rendering):
+    def __init__(self, chunk_size, sampling_rate, fade_seq, realtime_rendering, button_states):
         self._chunk_size = chunk_size
         self._sampling_rate = sampling_rate
         self._fade_seq = fade_seq
         self._realtime_rendering = realtime_rendering
+        self._button_states = button_states
 
     @property
     def chunk_size(self):
@@ -162,12 +163,16 @@ class Setting:
     def realtime_rendering(self):
         return self._realtime_rendering
 
+    @property
+    def button_states(self):
+        return self._button_states
+
 
 class Settings:
-    best_performance = Setting(512, 11025, 256, False)
-    balanced = Setting(512, 22050, 256, False)
-    best_quality = Setting(2048, 44100, 256, True)
-    extreme_quality = Setting(4096, 44100, 512, True)
+    best_performance = Setting(512, 11025, 256, False, ['down', 'normal', 'normal', 'normal'])
+    balanced = Setting(512, 22050, 256, False, ['normal', 'down', 'normal', 'normal'])
+    best_quality = Setting(2048, 44100, 256, True, ['normal', 'normal', 'down', 'normal'])
+    extreme_quality = Setting(4096, 44100, 512, True, ['normal', 'normal', 'normal', 'down'])
 
 
 class CarrierWave(EventDispatcher):

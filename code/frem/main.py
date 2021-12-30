@@ -1,21 +1,21 @@
 import os
 
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
-from kivy.uix.modalview import ModalView
 
 os.environ["KIVY_IMAGE"] = "pil,sdl2"
 
-from kivy.uix.image import Image, AsyncImage
+from kivy.uix.image import Image
 import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy_garden.graph import Graph, LinePlot
-from kivy.properties import NumericProperty, ObjectProperty
+from kivy.properties import NumericProperty, ObjectProperty, BooleanProperty
 from tools import *
 from kivy.lang import Builder
 from kivy.uix.floatlayout import FloatLayout
 from kivy.config import Config
 from kivy.uix.popup import Popup
+
 Config.read('config/settings.ini')
 
 kivy.require('2.0.0')
@@ -66,11 +66,26 @@ class MainGrid(BoxLayout):
     mod_wave_1 = ObjectProperty(ModulationWave)
     mod_wave_2 = ObjectProperty(ModulationWave)
     carrier = ObjectProperty(CarrierWave)
+    settings = ObjectProperty(Settings)
+    god_mode = BooleanProperty(False)
 
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
+        self.lines = None
+        self.old_formula = None
+        self.plot_y = None
+        self.plot_x = None
+        self.player = None
+        self.graph_max_x = None
+        self.graph_min_x = None
+        self.graph = None
+        self._current_tab = None
+        self.old_tab = None
+        self.waveforms = None
+        self.draw_border = None
         self.settings = Settings.best_performance
         self.change_settings(Config.get('settings', 'quality'))
+        self.god_mode = Config.get('settings', 'god_mode')
         chunk_size = self.settings.chunk_size
         self.builder = Builder
         self.chunk_size = chunk_size
@@ -78,34 +93,6 @@ class MainGrid(BoxLayout):
         self.wf_labels = ['Sine', 'Triangle', 'Sawtooth', 'Square Wave']
         self.max_minima = {}
         self.setup()
-        # self.init_max_min()
-        # self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=chunk_size, max_minima=self.max_minima)
-        # self.mod_wave_2 = ModulationWave('#FE53BB', waveform='Triangle', chunk_size=chunk_size,
-        #                                  max_minima=self.max_minima, frequency=2)
-        # self.carrier = CarrierWave('#00ff41', chunk_size=chunk_size, frequency=4)
-        # self.draw_border = False
-        #
-        # self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
-        # self._current_tab = 'WF_M1'
-        # self.old_tab = ''
-        # self.equ_color = self.mod_wave_1.color
-        # self.player = AudioPlayer(1, self.rate, self.chunk_size, self.settings.fade_seq, self.waveforms)
-        # self.graph_max_x = self.chunk_size + 1
-        # self.graph_min_x = 0
-        # self.graph = Graph(y_ticks_major=0.275, x_ticks_major=self.chunk_size/8, x_grid_label=True,
-        #                    border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 1],
-        #                    x_grid=True, y_grid=True, xmin=self.graph_min_x, xmax=self.graph_max_x, ymin=-0.55,
-        #                    ymax=0.56, draw_border=self.draw_border)
-        # self.plot_x = np.linspace(0, 1, self.chunk_size)
-        # self.plot_y = np.zeros(self.chunk_size)
-        #
-        # self.ids.modulation.add_widget(self.graph)
-        # self.formula = ''
-        # self.old_formula = ''
-        # self.lines = []
-        # self.update_plot()
-        # self.update_equations()
-        # self.show_warning_popup()
         self.show_tutorial()
 
     def on_start(self):
@@ -159,7 +146,7 @@ class MainGrid(BoxLayout):
     def show_settings():
         settingsPage = SettingsPage()
         settingsPage.popupWindow = Popup(title="Settings", content=settingsPage, separator_height=1,
-                                    background_color=[0, 0, 0, 0.5])
+                                         background_color=[0, 0, 0, 0.5])
         settingsPage.popupWindow.open()
 
     @staticmethod
@@ -176,35 +163,35 @@ class MainGrid(BoxLayout):
     @staticmethod
     def show_info():
         info = Info()  # Create a new instance of the P class
-        #info.popupWindow = Popup(title="Info", content=info, separator_height=1, background_color=[0, 0, 0, 0.5])
+        # info.popupWindow = Popup(title="Info", content=info, separator_height=1, background_color=[0, 0, 0, 0.5])
         info.popupWindow = Popup(title="", content=info, separator_height=0, background_color=[0, 0, 0, 0.5])
         # Create the popup window
         info.popupWindow.open()  # show the popup
-        info.ids.infoText_p1.text = "\n\n[b]Welcome to FREM [/b] \n\n[b]FREM[/b] is a tool to show how frequency modulation"\
-                                 " mathematically works which is also widely used in synthesizers (e.g. vibrato " \
-                                 "effect). For frequency modulation you will need at least two waveforms. One acts " \
-                                 "as [b]Modulating Wave[/b], the other one as [b]Carrier Wave[/b]. This tool provides "\
-                                 "[b]three[/b] waveforms, which means two modulating waves can be applied on one " \
-                                 "carrier wave.\n"
+        info.ids.infoText_p1.text = "\n\n[b]Welcome to FREM [/b] \n\n[b]FREM[/b] is a tool to show how frequency modulation" \
+                                    " mathematically works which is also widely used in synthesizers (e.g. vibrato " \
+                                    "effect). For frequency modulation you will need at least two waveforms. One acts " \
+                                    "as [b]Modulating Wave[/b], the other one as [b]Carrier Wave[/b]. This tool provides " \
+                                    "[b]three[/b] waveforms, which means two modulating waves can be applied on one " \
+                                    "carrier wave.\n"
         info.ids.infoText_p2.text = "\n[b]How to use FREM?[/b]\n\nFor each waveform it can be switched " \
-                                 "between four types: [b]Sine[/b], [b]Sawtooth[/b], [b]Triangle[/b] and [b]Square[/b]."\
-                                 " Each type has a different formula which will be shown and also can be visualized " \
-                                 "(shown in fig 1.1). For a closer look you can also zoom in.\n"
-        info.ids.infoText_p3.text = "\n\n[b]visible Graph: [/b] visualises the graph of the current selected waveform. "\
-                                 "The graph represents [color=FF0000]one second[/color]. The audio however is rendered"\
-                                 " in realtime as long as it's played. The played audio is not a loop!" \
-                                 "\n\n[b]Modulation Index: [/b] describes the factor, how much the modulation will be "\
-                                 "applied on the carrier wave (fig 1.2). \n\n[b]calculate F(x): [/b] integrates the " \
-                                 "formula of the selected waveform and enables the [b]Modulation Index[/b] (fig 1.2).\n"
+                                    "between four types: [b]Sine[/b], [b]Sawtooth[/b], [b]Triangle[/b] and [b]Square[/b]." \
+                                    " Each type has a different formula which will be shown and also can be visualized " \
+                                    "(shown in fig 1.1). For a closer look you can also zoom in.\n"
+        info.ids.infoText_p3.text = "\n\n[b]visible Graph: [/b] visualises the graph of the current selected waveform. " \
+                                    "The graph represents [color=FF0000]one second[/color]. The audio however is rendered" \
+                                    " in realtime as long as it's played. The played audio is not a loop!" \
+                                    "\n\n[b]Modulation Index: [/b] describes the factor, how much the modulation will be " \
+                                    "applied on the carrier wave (fig 1.2). \n\n[b]calculate F(x): [/b] integrates the " \
+                                    "formula of the selected waveform and enables the [b]Modulation Index[/b] (fig 1.2).\n"
         info.ids.infoText_p4.text = "\n\n[b]Carrier Wave: " \
-                                 "[/b] each waveform can be the carrier wave on which the modulating wave will be " \
-                                 "applied. E.g. [color=08F7FE]Modulating Wave[/color] [color=FE53BB]Carrier " \
-                                 "Wave[/color] or [color=FE53BB]Modulating Wave[/color] [color=00ff41]Carrier " \
-                                 "Wave[/color] \n\n[b]Modulating Wave: [/b] each waveform can be also the modulating " \
-                                 "wave except for the [color=00ff41]last one[/color]. " \
-                                 "To apply the modulating wave onto the carrier wave, the discrete integration of the " \
-                                 "waveform needs to be calculated ([b] calculate F(x)[/b] ).\n\n[b]PLAY:[/b] plays " \
-                                 "the carrier wave with it's applied modulation.\n"
+                                    "[/b] each waveform can be the carrier wave on which the modulating wave will be " \
+                                    "applied. E.g. [color=08F7FE]Modulating Wave[/color] [color=FE53BB]Carrier " \
+                                    "Wave[/color] or [color=FE53BB]Modulating Wave[/color] [color=00ff41]Carrier " \
+                                    "Wave[/color] \n\n[b]Modulating Wave: [/b] each waveform can be also the modulating " \
+                                    "wave except for the [color=00ff41]last one[/color]. " \
+                                    "To apply the modulating wave onto the carrier wave, the discrete integration of the " \
+                                    "waveform needs to be calculated ([b] calculate F(x)[/b] ).\n\n[b]PLAY:[/b] plays " \
+                                    "the carrier wave with it's applied modulation.\n"
 
     def init_max_min(self):
         for wf in self.wf_labels:
@@ -219,10 +206,10 @@ class MainGrid(BoxLayout):
             self.zoom /= 2
             self.graph.x_ticks_major *= 2
 
-    def audio_settings(self, value):
+    @staticmethod
+    def audio_settings(value):
         Config.set('settings', 'quality', value)
         Config.write()
-        #App.get_running_app().restart()
 
     def change_settings(self, value):
         if value == "Performance":
@@ -233,13 +220,6 @@ class MainGrid(BoxLayout):
             self.settings = Settings.best_quality
         elif value == "Extreme":
             self.settings = Settings.extreme_quality
-        # self.ids.modulation.remove_widget(self.graph)
-        # self.graph.clear_widgets()
-        # self.apply_settings()
-        # self.player.end()
-        # del self.player
-        #
-        # self.setup()
 
     def apply_settings(self):
         self.chunk_size = self.settings.chunk_size

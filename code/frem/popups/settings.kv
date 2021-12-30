@@ -1,46 +1,64 @@
 <ToggleButton>:
-    #pos_hint: {"x":0.3, "y":0.0}
-    #size_hint: 0.4, 1
+    font_size: self.height * .3
 
 <SettingsPage>:
 
     BoxLayout:
         orientation: 'vertical'
-        spacing: 20
-        padding: 100
-        size_hint: 0.5, 1
-        size: self.parent.size  # important!
-        pos: self.parent.pos  # important!
+        spacing: 10
+        size_hint: 0.6, 1
+        pos_hint: {'center_x':0.5, 'center_y':0.5}
 
-        ToggleButton:
-            text: 'Low'
-            group: 'settings'
-            state: 'down'
-            on_press: app.get_running_app().root.audio_settings('Performance')
-            on_press: app.get_running_app().root.show_hint()
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0.4, 1
+            pos_hint: {'center_x':0.5, 'center_y':0.5}
+            spacing: 10
 
-        ToggleButton:
-            text: 'Medium'
-            group: 'settings'
-            on_press: app.get_running_app().root.audio_settings('Balanced')
-            on_press: app.get_running_app().root.show_hint()
+            Label:
+                text: '\n\nQuality of rendered graph and audio. Higher settings can result in stuttering!'
+                markup: True
 
-        ToggleButton:
-            text: 'High'
-            group: 'settings'
-            on_press: app.get_running_app().root.audio_settings('Quality')
-            on_press: app.get_running_app().root.show_hint()
+            Label:
+                text: '[b]Audio:[/b] '+ str(app.get_running_app().root.settings.sampling_rate) +'khz (Sampling Rate)\n[b]Graph:[/b] ' + str(app.get_running_app().root.settings.chunk_size)+ ' samples (points on graph)'
+                markup: True
 
-        ToggleButton:
-            text: 'Extreme'
-            group: 'settings'
-            on_press: app.get_running_app().root.audio_settings('Extreme')
-            on_press: app.get_running_app().root.show_hint()
+            ToggleButton:
+                id: 'settings_low'
+                text: 'Low'
+                group: 'settings'
+                state: app.get_running_app().root.settings.button_states[0]
+                on_press: app.get_running_app().root.audio_settings('Performance')
+                on_press: app.get_running_app().root.show_hint()
 
+            ToggleButton:
+                id: 'settings_medium'
+                text: 'Medium'
+                group: 'settings'
+                state: app.get_running_app().root.settings.button_states[1]
+                on_press: app.get_running_app().root.audio_settings('Balanced')
+                on_press: app.get_running_app().root.show_hint()
 
-        Button:
-            text: "Close"
-            #size_hint: 0.2, 0.1
-            #pos_hint: {"x":0.4, "y":0.0}
+            ToggleButton:
+                id: 'settings_high'
+                text: 'High'
+                group: 'settings'
+                state: app.get_running_app().root.settings.button_states[2]
+                on_press: app.get_running_app().root.audio_settings('Quality')
+                on_press: app.get_running_app().root.show_hint()
 
-            on_release: root.popupWindow.dismiss()
+            ToggleButton:
+                id: 'settings_extreme'
+                text: 'Extreme'
+                group: 'settings'
+                state: app.get_running_app().root.settings.button_states[3]
+                on_press: app.get_running_app().root.audio_settings('Extreme')
+                on_press: app.get_running_app().root.show_hint()
+
+            BoxLayout:
+                size_hint: 1, 0.1
+
+            Button:
+                text: "Save"
+                font_size: self.height * .3
+                on_release: root.popupWindow.dismiss()
