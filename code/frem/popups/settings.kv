@@ -1,6 +1,6 @@
 <ToggleButton>:
-    pos_hint: {"x":0.3, "y":0.0}
-    size_hint: 0.4, 1
+    #pos_hint: {"x":0.3, "y":0.0}
+    #size_hint: 0.4, 1
 
 <SettingsPage>:
 
@@ -8,6 +8,9 @@
         orientation: 'vertical'
         spacing: 20
         padding: 100
+        size_hint: 0.5, 1
+        size: self.parent.size  # important!
+        pos: self.parent.pos  # important!
 
         ToggleButton:
             text: 'Low'
@@ -35,9 +38,9 @@
             on_press: app.get_running_app().root.show_hint()
 
 
-    Button:
-        text: "Close"
-        size_hint: 0.2, 0.1
-        pos_hint: {"x":0.4, "y":0.0}
+        Button:
+            text: "Close"
+            #size_hint: 0.2, 0.1
+            #pos_hint: {"x":0.4, "y":0.0}
 
-        on_release: root.popupWindow.dismiss()
+            on_release: root.popupWindow.dismiss()

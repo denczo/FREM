@@ -67,8 +67,11 @@
 #        size_hint: 1, 0.15
 #        pos_hint: {"x":0.45, "top":1.12}
 
+    BoxLayout:
+
+
     ScrollView:
-        size_hint: 1, 1
+        size_hint: 1, 0.95
         pos_hint: {"x":0, "top":1.05}
         do_scroll_x: False
         spacing:110
@@ -167,65 +170,8 @@
 
 
 
-#    Button:
-#        text: "Close"
-#        size_hint: 0.2, 0.1
-#        pos_hint: {"x":0.4, "y":0.0}
-#        on_release: root.popupWindow.dismiss()
-
-    BoxLayout:
-#        text_size: self.width, 2
-
-        size_hint: 1, 0.1
-#        pos_hint: {"x":0.4, "y":0.0}
-
-        Button:
-            text: "Close"
-            size_hint: 0.2, 1
-#            pos_hint: {"x":0.4, "y":0.0}
-
-            on_release: root.popupWindow.dismiss()
-
-        BoxLayout:
-            size_hint: 0.3, 1
-
-            Label:
-                text: "Settings:"
-
-        BoxLayout:
-            size_hint: 0.5, 0.5
-            ToggleButton:
-                size_hint: 0.2, 1
-
-                text: 'Low'
-                group: 'settings'
-                orientation: 'horizontal'
-                state: 'down'
-                on_press: app.get_running_app().root.audio_settings('Performance')
-                on_press: app.get_running_app().root.show_hint()
-
-            ToggleButton:
-                size_hint: 0.2, 1
-                text: 'Medium'
-                group: 'settings'
-                orientation: 'horizontal'
-                on_press: app.get_running_app().root.audio_settings('Balanced')
-                on_press: app.get_running_app().root.show_hint()
-
-            ToggleButton:
-                size_hint: 0.2, 1
-
-                text: 'High'
-                group: 'settings'
-                orientation: 'horizontal'
-                on_press: app.get_running_app().root.audio_settings('Quality')
-                on_press: app.get_running_app().root.show_hint()
-
-            ToggleButton:
-                size_hint: 0.2, 1
-
-                text: 'Extreme'
-                group: 'settings'
-                orientation: 'horizontal'
-                on_press: app.get_running_app().root.audio_settings('Extreme')
-                on_press: app.get_running_app().root.show_hint()
+    Button:
+        text: "Close"
+        size_hint: 0.2, 0.1
+        pos_hint: {"x":0.4, "y":0.0}
+        on_release: root.popupWindow.dismiss()
