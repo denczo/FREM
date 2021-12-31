@@ -1,0 +1,9 @@
+bin/
+build/
+dist/
+.buildozer
+*.xml
+**/.idea/
+/__pycache__/
+*.pyc
+*.pyo
