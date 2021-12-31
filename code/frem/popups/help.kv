@@ -1,75 +1,4 @@
-<Hint>:
-    Label:
-        id: infoText
-        text: "[b]Changes will be affected after next restart![/b]"
-        markup: True
-    #        font_size: 20
-        halign: 'center'
-        valign: 'middle'
-        text_size: self.width, None
-        height: self.texture_size[1]
-
-    Button:
-        text: "Close"
-        size_hint: 0.2, 0.1
-        pos_hint: {"x":0.4, "y":0.0}
-        on_release: root.popupWindow.dismiss()
-
-<Tutorial>:
-    Image:
-        source: 'logo/frem_logo_font.png'
-        size_hint: 1, 0.15
-        pos_hint: {"x":0.45, "top":1.12}
-
-    ScrollView:
-        size_hint: 1, 0.8
-        pos_hint: {"x":0, "top":0.95}
-        do_scroll_x: False
-        bar_width: 4
-        bar_color: 1, 1, 1, 1
-        bar_inactive_color: 1, 1, 1, 0.5
-
-        Label:
-            id: tutorialText
-            text: ""
-            markup: True
-            size_hint: 0.98, None
-            text_size: self.width, None
-            height: self.texture_size[1]
-
-<Warning>:
-    padding: 10
-
-    Image:
-        source: 'logo/warning.png'
-        size_hint: 0.2, 0.5
-        pos_hint: {"x":0.4, "top":1}
-
-    Label:
-        id: infoText
-        text: "[b]Please lower your volume before using this app! This app let you experiment with audio which can be loud and unpleasant in some cases![/b]"
-        markup: True
-#        font_size: 20
-        halign: 'center'
-        valign: 'middle'
-        text_size: self.width, None
-        height: self.texture_size[1]
-
-    Button:
-        text: "Close"
-        size_hint: 0.2, 0.1
-        pos_hint: {"x":0.4, "y":0.0}
-        on_release: root.popupWindow.dismiss()
-
 <Info>:
-#    Image:
-#        source: 'logo/frem_logo_font.png'
-#        size_hint: 1, 0.15
-#        pos_hint: {"x":0.45, "top":1.12}
-
-    BoxLayout:
-
-
     ScrollView:
         size_hint: 1, 0.95
         pos_hint: {"x":0, "top":1.05}
@@ -104,19 +33,11 @@
             AsyncImage:
                 id: gif
                 source: './animations/setFrequency.zip'
-#                allow_stretch: True
-#                keep_ratio: True
                 size_hint: 1, None
                 height: self.texture_size[1]
-
-#                nocache: True
                 anim_delay: 1
                 mipmap: True
                 keep_data: True
-#                anim_reset: False
-#                allow_anim: True
-#                anim_loop: 1
-#                norm_image_size: True
 
             Label:
                 text: "fig 1.1 (waveform types)"
@@ -166,9 +87,6 @@
                 text: "fig 1.3 (second modulating wave)"
                 text_size: self.size
                 halign: "center"
-
-
-
 
     Button:
         text: "Close"

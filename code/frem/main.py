@@ -91,7 +91,6 @@ class MainGrid(BoxLayout):
         self.wf_labels = ['Sine', 'Triangle', 'Sawtooth', 'Square Wave']
         self.max_minima = {}
         self.setup()
-        self.show_tutorial()
 
     def on_start(self):
         # self.show_popup()
@@ -130,7 +129,7 @@ class MainGrid(BoxLayout):
     @staticmethod
     def show_hint():
         hint = Hint()
-        hint.popupWindow = Popup(title="Hint!", content=hint, separator_height=1, background_color=[0, 0, 0, 0.5])
+        hint.popupWindow = Popup(title="", content=hint, separator_height=0, background_color=[50, 50, 50, 0.5], size_hint=(0.5, 0.25))
         hint.popupWindow.open()
 
     @staticmethod
@@ -147,16 +146,12 @@ class MainGrid(BoxLayout):
                                          background_color=[0, 0, 0, 0.5])
         settingsPage.popupWindow.open()
 
-    @staticmethod
-    def show_tutorial():
-        tutorial = Tutorial()
-        tutorial.popupWindow = Popup(title="", content=tutorial, separator_height=1, background_color=[0, 0, 0, 0.5])
-        tutorial.popupWindow.open()
-        tutorial.ids.tutorialText.text = "Music of the 70s and 80s used lots of synthesizers which generate synthetic audio signals with all " \
-                                         "kind of effects. One of those is the vibrato effect which sounds like this. There are analog and digital synthesizers" \
-                                         "While analog synthesizer use physical components to generate the audio signal, digital synthesizer are doing this only with" \
-                                         "mathematics and a digital computer chip. The vibrato effect can be realised mathematically by using frequency modulation." \
-                                         "This App demonstrates it in an intuitive way and shows what else is possible with this concept."
+
+    #"Music of the 70s and 80s used lots of synthesizers which generate synthetic audio signals with all " \
+    #                                     "kind of effects. One of those is the vibrato effect which sounds like this. There are analog and digital synthesizers" \
+    #                                     "While analog synthesizer use physical components to generate the audio signal, digital synthesizer are doing this only with" \
+    #                                     "mathematics and a digital computer chip. The vibrato effect can be realised mathematically by using frequency modulation." \
+    #                                     "This App demonstrates it in an intuitive way and shows what else is possible with this concept."
 
     @staticmethod
     def show_info():
@@ -302,10 +297,6 @@ class Warning(FloatLayout):
 
 
 class Hint(FloatLayout):
-    pass
-
-
-class Tutorial(FloatLayout):
     pass
 
 
