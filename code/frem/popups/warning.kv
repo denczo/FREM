@@ -19,5 +19,7 @@
     Button:
         text: "Close"
         size_hint: 0.2, 0.1
-        pos_hint: {"x":0.4, "y":0.0}
+        pos: self.parent.pos
+
+        #pos_hint: {"x":0.4, "y":0.0}
         on_release: root.popupWindow.dismiss()

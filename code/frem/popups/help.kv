@@ -1,6 +1,6 @@
 <Info>:
     ScrollView:
-        size_hint: 1, 0.95
+        size_hint: 1, 1.05
         pos_hint: {"x":0, "top":1.05}
         do_scroll_x: False
         spacing:110
@@ -88,8 +88,23 @@
                 text_size: self.size
                 halign: "center"
 
-    Button:
-        text: "Close"
-        size_hint: 0.2, 0.1
-        pos_hint: {"x":0.4, "y":0.0}
-        on_release: root.popupWindow.dismiss()
+    BoxLayout:
+        size_hint: 1, 0.15
+        orientation: 'vertical'
+
+        canvas.before:
+            Color:
+                rgba: [0, 0, 0, 0.5]
+            Rectangle:
+                size: self.size
+                pos: self.parent.pos
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0.25, 1
+
+            Button:
+                size_hint_y: 1
+                text: "Close"
+                pos_hint: {"x":1.5, "y":0}
+                on_release: root.popupWindow.dismiss()

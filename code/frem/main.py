@@ -129,7 +129,7 @@ class MainGrid(BoxLayout):
     @staticmethod
     def show_hint():
         hint = Hint()
-        hint.popupWindow = Popup(title="", content=hint, separator_height=0, background_color=[50, 50, 50, 0.5], size_hint=(0.5, 0.25))
+        hint.popupWindow = Popup(title="", content=hint, separator_height=0, background_color=[255, 255, 255, 0.2], size_hint=(0.75, 0.6))
         hint.popupWindow.open()
 
     @staticmethod

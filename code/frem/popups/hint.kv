@@ -1,16 +1,24 @@
 <Hint>:
-    Label:
-        id: infoText
-        text: "[b]Changes will be affected after next restart![/b]"
-        markup: True
-        font_size: 20
-        halign: 'center'
-        valign: 'middle'
-        text_size: self.width, None
-        height: self.texture_size[1]
+    BoxLayout:
+        orientation: 'vertical'
+        pos: self.parent.pos
+        size: self.parent.size
 
-    Button:
-        text: "Close"
-        size_hint: 0.2, 0.2
-        pos_hint: {"x":0.4, "y":0.0}
-        on_release: root.popupWindow.dismiss()
+        Label:
+            id: infoText
+            text: "[b]Changes will be affected after next restart![/b]"
+            markup: True
+            font_size: 20
+            halign: 'center'
+            valign: 'middle'
+            text_size: self.width, None
+            height: self.texture_size[1]
+
+
+        Button:
+            text: "Close"
+            #size_hint: 0.2, 0.2
+            size_hint_y: None
+            pos: self.parent.pos
+            #pos_hint: {"x":0.4, "y":0.0}
+            on_release: root.popupWindow.dismiss()
