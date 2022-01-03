@@ -72,12 +72,32 @@
                     height: self.width
                     on_release: root.show_info()
 
+
                 Button:
-                    text: '[b]S[/b]'
+                    #text: '[b]S[/b]'
                     markup: True
                     size_hint_y: None
                     height: self.width
                     on_release: root.show_settings()
+                    spacing: 10
+                    padding: 50, 50
+                    #BoxLayout:
+                    #    canvas.before:
+                    #        Color:
+                    #            rgba: [255, 255, 0, 0.5]
+                    #        Rectangle:
+                    #            size: self.parent.size
+                    #            pos: self.parent.pos
+
+
+                    Image:
+                        source: 'logo/settings.png'
+                        pos: self.parent.pos
+                        size: self.parent.size
+                        keep_ratio: True
+                        spacing: 100
+
+
 
                 RotatedImage:
                     angle: 90
