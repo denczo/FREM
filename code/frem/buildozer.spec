@@ -10,7 +10,7 @@ package.name = frem
 package.domain = org.test
 
 # (str) Source code where the main.py live
-source.dir = ./frem/
+source.dir = ./
 
 # (list) Source files to include (let empty to include all the files)
 source.include_exts = py,png,jpg,kv,atlas,gif,zip
@@ -28,7 +28,7 @@ source.include_exts = py,png,jpg,kv,atlas,gif,zip
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.3.0
+version = 0.4.0
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]

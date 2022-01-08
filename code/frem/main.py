@@ -13,11 +13,10 @@ from kivy.properties import NumericProperty, ObjectProperty, BooleanProperty
 from tools import *
 from kivy.lang import Builder
 from kivy.uix.floatlayout import FloatLayout
-from kivy.config import Config
+from kivy.config import Config, ConfigParser
 from kivy.uix.popup import Popup
 
-Config.read('config/settings.ini')
-
+#Config.read('./config/settings.ini')
 kivy.require('2.0.0')
 
 
@@ -26,6 +25,7 @@ class MainApp(App):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.config = ConfigParser()
         self.app = None
 
     def build(self):
@@ -40,11 +40,12 @@ class MainApp(App):
         return MainApp().run()
 
     def on_start(self):
-        status = Config.getint('settings', 'first_start')
+        self.config.read('./config/settings.ini')
+        status = self.config.getint('settings', 'first_start')
         if status:
             self.app.show_warning_popup()
-            Config.set('settings', 'first_start', 0)
-            Config.write()
+            self.config.set('settings', 'first_start', 0)
+            self.config.write()
 
 
 colors = [
@@ -70,6 +71,8 @@ class MainGrid(BoxLayout):
 
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
+        self.config = ConfigParser()
+        self.config.read('./config/settings.ini')
         self.lines = None
         self.old_formula = None
         self.plot_y = None
@@ -83,7 +86,7 @@ class MainGrid(BoxLayout):
         self.waveforms = None
         self.draw_border = None
         self.settings = Settings.best_performance
-        self.change_settings(Config.get('settings', 'quality'))
+        self.change_settings(self.config.get('settings', 'quality'))
         chunk_size = self.settings.chunk_size
         self.builder = Builder
         self.chunk_size = chunk_size
@@ -199,10 +202,9 @@ class MainGrid(BoxLayout):
             self.zoom /= 2
             self.graph.x_ticks_major *= 2
 
-    @staticmethod
-    def audio_settings(value):
-        Config.set('settings', 'quality', value)
-        Config.write()
+    def audio_settings(self, value):
+        self.config.set('settings', 'quality', value)
+        self.config.write()
 
     def change_settings(self, value):
         if value == "Performance":
