@@ -1,3 +1,4 @@
+import configparser
 import os
 
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
@@ -16,7 +17,6 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.config import Config, ConfigParser
 from kivy.uix.popup import Popup
 
-#Config.read('./config/settings.ini')
 kivy.require('2.0.0')
 
 
@@ -29,6 +29,7 @@ class MainApp(App):
         self.app = None
 
     def build(self):
+        self.read_config()
         self.app = MainGrid()
         return self.app
 
@@ -45,6 +46,16 @@ class MainApp(App):
         if status:
             self.app.show_warning_popup()
             self.config.set('settings', 'first_start', 0)
+            self.config.write()
+
+    def read_config(self):
+        try:
+            self.config.read('./config/settings.ini')
+            self.config.get('settings', 'first_start')
+        except configparser.NoSectionError:
+            self.config.add_section('settings')
+            self.config.set('settings', 'first_start', 1)
+            self.config.set('settings', 'quality', 'Performance')
             self.config.write()
 
 
@@ -132,14 +143,15 @@ class MainGrid(BoxLayout):
     @staticmethod
     def show_hint():
         hint = Hint()
-        hint.popupWindow = Popup(title="", content=hint, separator_height=0, background_color=[255, 255, 255, 0.2], size_hint=(0.75, 0.6))
+        hint.popupWindow = Popup(title="", content=hint, separator_height=0, background_color=[255, 255, 255, 0.5],
+                                 size_hint=(0.75, 0.6))
         hint.popupWindow.open()
 
     @staticmethod
     def show_warning_popup():
         warning = Warning()
         warning.popupWindow = Popup(title="Caution!", content=warning, separator_height=1,
-                                    background_color=[0, 0, 0, 0.5])
+                                    background_color=[0, 0, 0, 0.5], size_hint=(0.75, 0.6))
         warning.popupWindow.open()
 
     @staticmethod
@@ -149,8 +161,7 @@ class MainGrid(BoxLayout):
                                          background_color=[0, 0, 0, 0.5])
         settingsPage.popupWindow.open()
 
-
-    #"Music of the 70s and 80s used lots of synthesizers which generate synthetic audio signals with all " \
+    # "Music of the 70s and 80s used lots of synthesizers which generate synthetic audio signals with all " \
     #                                     "kind of effects. One of those is the vibrato effect which sounds like this. There are analog and digital synthesizers" \
     #                                     "While analog synthesizer use physical components to generate the audio signal, digital synthesizer are doing this only with" \
     #                                     "mathematics and a digital computer chip. The vibrato effect can be realised mathematically by using frequency modulation." \

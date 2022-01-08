@@ -1,110 +1,101 @@
 <Info>:
-    ScrollView:
-        size_hint: 1, 1.05
-        pos_hint: {"x":0, "top":1.05}
-        do_scroll_x: False
-        spacing:110
-        bar_width: 4
-        bar_color: 1, 1, 1, 1
-        bar_inactive_color: 1, 1, 1, 0.5
-
-        BoxLayout:
-            size_hint: 1, None
-            orientation: 'vertical'
-            adaptive_height: True
-            height: self.minimum_height
-
-            Label:
-                id: infoText_p1
-                text: ""
-                markup: True
-                size_hint: 0.98, None
-                text_size: self.width, None
-                height: self.texture_size[1]
-
-            Label:
-                id: infoText_p2
-                text: ""
-                markup: True
-                size_hint: 0.98, None
-                text_size: self.width, None
-                height: self.texture_size[1]
-
-            AsyncImage:
-                id: gif
-                source: './animations/setFrequency.zip'
-                size_hint: 1, None
-                height: self.texture_size[1]
-                anim_delay: 1
-                mipmap: True
-                keep_data: True
-
-            Label:
-                text: "fig 1.1 (waveform types)"
-                text_size: self.size
-                halign: "center"
-
-            Label:
-                id: infoText_p3
-                text: ""
-                markup: True
-                size_hint: 0.98, None
-                text_size: self.width, None
-                height: self.texture_size[1]
-
-            AsyncImage:
-                id: gif
-                source: './animations/setFreqMod.zip'
-                keep_ratio: True
-                size_hint: 1, None
-                height: self.texture_size[1]
-                anim_delay: 1
-                keep_data: True
-
-            Label:
-                text: "fig 1.2 (frequency modulation)"
-                text_size: self.size
-                halign: "center"
-
-            Label:
-                id: infoText_p4
-                text: ""
-                markup: True
-                size_hint: 0.98, None
-                text_size: self.width, None
-                height: self.texture_size[1]
-
-            AsyncImage:
-                id: gif
-                source: './animations/secondModWave.zip'
-                keep_ratio: True
-                size_hint: 1, None
-                height: self.texture_size[1]
-                anim_delay: 1
-                keep_data: True
-
-            Label:
-                text: "fig 1.3 (second modulating wave)"
-                text_size: self.size
-                halign: "center"
-
     BoxLayout:
-        size_hint: 1, 0.15
-        orientation: 'vertical'
-
-        canvas.before:
-            Color:
-                rgba: [0, 0, 0, 0.5]
-            Rectangle:
-                size: self.size
-                pos: self.parent.pos
-
         BoxLayout:
-            orientation: 'vertical'
-            size_hint: 0.25, 1
-
+            size_hint: 0.1, 1.05
+            padding: 20
             Button:
-                size_hint_y: 1
-                text: "Close"
-                pos_hint: {"x":1.5, "y":0}
+                size_hint_y: None
+                height: self.width
+                text: "[b]X[/b]"
+                markup: True
+                pos_hint: {"top":1}
                 on_release: root.popupWindow.dismiss()
+
+        ScrollView:
+            size_hint: 0.9, 1.05
+            pos_hint: {"x":0, "top":1.05}
+            do_scroll_x: False
+            spacing:110
+            bar_width: 4
+            bar_color: 1, 1, 1, 1
+            bar_inactive_color: 1, 1, 1, 0.5
+
+            BoxLayout:
+                size_hint: 1, None
+                orientation: 'vertical'
+                adaptive_height: True
+                height: self.minimum_height
+
+                Label:
+                    id: infoText_p1
+                    text: ""
+                    markup: True
+                    size_hint: 0.98, None
+                    text_size: self.width, None
+                    height: self.texture_size[1]
+
+                Label:
+                    id: infoText_p2
+                    text: ""
+                    markup: True
+                    size_hint: 0.98, None
+                    text_size: self.width, None
+                    height: self.texture_size[1]
+
+                AsyncImage:
+                    id: gif
+                    source: './animations/setFrequency.zip'
+                    size_hint: 1, None
+                    height: self.texture_size[1]
+                    anim_delay: 1
+                    mipmap: True
+                    keep_data: True
+
+                Label:
+                    text: "fig 1.1 (waveform types)"
+                    text_size: self.size
+                    halign: "center"
+
+                Label:
+                    id: infoText_p3
+                    text: ""
+                    markup: True
+                    size_hint: 0.98, None
+                    text_size: self.width, None
+                    height: self.texture_size[1]
+
+                AsyncImage:
+                    id: gif
+                    source: './animations/setFreqMod.zip'
+                    keep_ratio: True
+                    size_hint: 1, None
+                    height: self.texture_size[1]
+                    anim_delay: 1
+                    keep_data: True
+
+                Label:
+                    text: "fig 1.2 (frequency modulation)"
+                    text_size: self.size
+                    halign: "center"
+
+                Label:
+                    id: infoText_p4
+                    text: ""
+                    markup: True
+                    size_hint: 0.98, None
+                    text_size: self.width, None
+                    height: self.texture_size[1]
+
+                AsyncImage:
+                    id: gif
+                    source: './animations/secondModWave.zip'
+                    keep_ratio: True
+                    size_hint: 1, None
+                    height: self.texture_size[1]
+                    anim_delay: 1
+                    keep_data: True
+
+                Label:
+                    text: "fig 1.3 (second modulating wave)"
+                    text_size: self.size
+                    halign: "center"
