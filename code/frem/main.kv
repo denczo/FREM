@@ -62,32 +62,26 @@
             BoxLayout:
                 orientation: 'vertical'
                 id: info
-                size_hint: 0.05, 1
+                size_hint: 0.06, 1
                 padding: 0,5,5,0
 
                 Button:
-                    text: '[b]?[/b]'
+                    text: '[i][b]i[/b][/i]'
                     markup: True
                     size_hint_y: None
                     height: self.width
+                    font_size: 0.75*self.height
                     on_release: root.show_info()
 
+                BoxLayout:
+                    size_hint: 1, 0.1
 
                 Button:
-                    #text: '[b]S[/b]'
-                    markup: True
                     size_hint_y: None
                     height: self.width
                     on_release: root.show_settings()
                     spacing: 10
                     padding: 50, 50
-                    #BoxLayout:
-                    #    canvas.before:
-                    #        Color:
-                    #            rgba: [255, 255, 0, 0.5]
-                    #        Rectangle:
-                    #            size: self.parent.size
-                    #            pos: self.parent.pos
 
 
                     Image:
@@ -134,14 +128,17 @@
             BoxLayout:
                 id: zoom
                 orientation: 'vertical'
-                size_hint: 0.05, 1
+                size_hint: 0.06, 1
                 padding: 5, 0, 0, 0
                 valign: 'middle'
 
                 Button:
                     text: '+'
                     size_hint_y: None
+                    markup: True
                     height: self.width
+                    font_size: 0.9*self.height
+
                     on_release: root.update_zoom(self.text)
 
                 Label:
@@ -151,7 +148,10 @@
                     text: '-'
                     size_hint_y: None
                     height: self.width
+                    font_size: 1*self.height
+
                     on_release: root.update_zoom(self.text)
+
 
         BoxLayout:
             id: panel
@@ -234,7 +234,7 @@
                         size_hint: 1, 0.2
 
                         Label:
-                            text: 'graph visible'
+                            text: 'Show Graph'
                             text_size: self.size
                             font_size: self.width/9
                             valign: 'middle'
@@ -250,7 +250,7 @@
                         size_hint: 1, 0.2
 
                         Label:
-                            text: 'calculate F(x)'
+                            text: 'Modulation'
                             text_size: self.size
                             font_size: self.width/9
                             valign: 'middle'
@@ -356,7 +356,7 @@
                         size_hint: 1, 0.2
 
                         Label:
-                            text: 'graph visible'
+                            text: 'Show Graph'
                             text_size: self.size
                             font_size: self.width/9
                             valign: 'middle'
@@ -372,7 +372,7 @@
                         size_hint: 1, 0.2
 
                         Label:
-                            text: 'calculate F(x)'
+                            text: 'Modulation'
                             text_size: self.size
                             font_size: self.width/9
                             valign: 'middle'
@@ -477,7 +477,7 @@
                         size_hint: 1, 0.2
 
                         Label:
-                            text: 'graph visible'
+                            text: 'Show Graph'
                             font_size: self.width/9
 
                         Switch:

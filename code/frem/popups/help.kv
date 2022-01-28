@@ -3,13 +3,34 @@
         BoxLayout:
             size_hint: 0.1, 1.05
             padding: 20
-            Button:
-                size_hint_y: None
-                height: self.width
-                text: "[b]X[/b]"
-                markup: True
+
+            BoxLayout
+                orientation: 'vertical'
                 pos_hint: {"top":1}
-                on_release: root.popupWindow.dismiss()
+
+                Button:
+                    size_hint_y: None
+                    height: self.width
+                    text: "[b]X[/b]"
+                    markup: True
+                    on_release: root.popupWindow.dismiss()
+
+                BoxLayout:
+                    size_hint: 1, 1
+
+                ToggleButton:
+                    text: 'I'
+                    group: 'help'
+                    state: 'down'
+                    height: self.width
+                    size_hint_y: None
+
+                ToggleButton:
+                    text: 'II'
+                    group: 'help'
+                    height: self.width
+                    size_hint_y: None
+
 
         ScrollView:
             size_hint: 0.9, 1.05

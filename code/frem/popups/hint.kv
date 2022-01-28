@@ -6,7 +6,7 @@
 
         Label:
             id: infoText
-            text: "[b]Changes will be affected after next restart![/b]"
+            text: "[b]Changes will be affected after restart![/b]"
             markup: True
             font_size: 40
             halign: 'center'
@@ -19,7 +19,8 @@
             size_hint_y: None
 
             Button:
-                text: "Restart"
+                text: "Exit"
+                on_release: app.get_running_app().stop()
 
             Button:
                 text: "Close"

@@ -2,7 +2,6 @@ import configparser
 import os
 
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
-
 os.environ["KIVY_IMAGE"] = "pil,sdl2"
 
 from kivy.uix.image import Image
@@ -33,12 +32,8 @@ class MainApp(App):
         self.app = MainGrid()
         return self.app
 
-    def restart(self):
-        self.app.clear_widgets()
-        self.root.clear_widgets()
-        self.root.canvas.clear()
-        self.stop()
-        return MainApp().run()
+    def exit(self):
+        self.app.stop()
 
     def on_start(self):
         self.config.read('./config/settings.ini')
@@ -110,6 +105,9 @@ class MainGrid(BoxLayout):
         # self.show_popup()
         pass
 
+    def clear(self):
+        self.graph.clear_widgets()
+
     def setup(self):
         self.init_max_min()
         self.mod_wave_1 = ModulationWave('#08F7FE', waveform='Sine', chunk_size=self.chunk_size,
@@ -118,7 +116,6 @@ class MainGrid(BoxLayout):
                                          max_minima=self.max_minima, frequency=2)
         self.carrier = CarrierWave('#00ff41', chunk_size=self.chunk_size, frequency=4)
         self.draw_border = False
-
         self.waveforms = [self.mod_wave_1, self.mod_wave_2, self.carrier]
         self._current_tab = 'WF_M1'
         self.old_tab = ''
@@ -143,7 +140,7 @@ class MainGrid(BoxLayout):
     @staticmethod
     def show_hint():
         hint = Hint()
-        hint.popupWindow = Popup(title="", content=hint, separator_height=0, background_color=[255, 255, 255, 0.5],
+        hint.popupWindow = Popup(title="", content=hint, separator_height=0, background_color=[0.8, 0.8, 0.8, 0.8],
                                  size_hint=(0.75, 0.6))
         hint.popupWindow.open()
 
