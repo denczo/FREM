@@ -75,7 +75,7 @@ class AudioPlayer:
         self.stream = get_output(channels=channels, rate=rate, buffersize=buffer_size, encoding=16)
         self.sample = AudioSample()
         print("AudioPlayer Chunksize ", self.chunk_size)
-        print("Sampling Rate ",self.rate)
+        print("Sampling Rate ", self.rate)
         # self.stream.add_sample(self.sample)
         self.chunk = None
         self.pos = 0

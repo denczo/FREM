@@ -19,20 +19,34 @@
                     size_hint: 1, 1
 
                 ToggleButton:
-                    text: 'I'
+                    text: '[b]I[/b]'
                     group: 'help'
                     state: 'down'
+                    markup: True
+                    font_size: 0.75*self.height
                     height: self.width
                     size_hint_y: None
 
                 ToggleButton:
-                    text: 'II'
+                    text: '[b]II[/b]'
                     group: 'help'
+                    markup: True
+                    font_size: 0.75*self.height
                     height: self.width
                     size_hint_y: None
 
+                ToggleButton:
+                    text: '[b]III[/b]'
+                    group: 'help'
+                    markup: True
+                    font_size: 0.75*self.height
+                    height: self.width
+                    size_hint_y: None
+                    on_release: root.ids.scrollbox.scrollto
+
 
         ScrollView:
+            id: scrollbox
             size_hint: 0.9, 1.05
             pos_hint: {"x":0, "top":1.05}
             do_scroll_x: False

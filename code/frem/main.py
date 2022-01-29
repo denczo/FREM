@@ -39,6 +39,8 @@ class MainApp(App):
         self.config.read('./config/settings.ini')
         status = self.config.getint('settings', 'first_start')
         if status:
+            self.app.show_info()
+
             self.app.show_warning_popup()
             self.config.set('settings', 'first_start', 0)
             self.config.write()
