@@ -4,7 +4,7 @@ from kivy.properties import StringProperty
 from kivy_garden.graph import LinePlot
 from pylatexenc.latex2text import LatexNodes2Text
 
-from waveform import Triangle, Sawtooth, SquareWave, Sine
+from .waveform import Triangle, Sawtooth, SquareWave, Sine
 from audiostream import get_output, AudioSample
 
 
@@ -76,7 +76,6 @@ class AudioPlayer:
         self.sample = AudioSample()
         print("AudioPlayer Chunksize ", self.chunk_size)
         print("Sampling Rate ", self.rate)
-        # self.stream.add_sample(self.sample)
         self.chunk = None
         self.pos = 0
         self.playing = False
@@ -119,7 +118,6 @@ class AudioPlayer:
         self.stream.add_sample(self.sample)
         self.sample.play()
         self.playing = True
-        print("still running")
 
         while self.playing:
             # smoothing
@@ -129,13 +127,13 @@ class AudioPlayer:
             chunk = self.get_bytes(chunk[:self.chunk_size])
             self.sample.write(chunk)
             self.pos += self.chunk_size
-            # print("still running")
             if not self.playing:
                 self.sample.stop()
 
     def stop(self):
         self.playing = False
         self.sample.stop()
+        self.pos = 0
 
 
 class Setting:
@@ -178,9 +176,8 @@ class Settings:
 class CarrierWave(EventDispatcher):
     equation = StringProperty('')
 
-    # color = StringProperty('')
-
-    def __init__(self, color, chunk_size, waveform='Sine', frequency=1):
+    def __init__(self, color, chunk_size, waveform='Sine', frequency=1, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.chunk_size = chunk_size
         self.waveform = waveform
         self.frequency = frequency

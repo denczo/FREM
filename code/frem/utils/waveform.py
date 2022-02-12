@@ -7,7 +7,6 @@ class Sawtooth:
     @staticmethod
     def trigonometric(a, f, x, c=0, m=0):
         return -2 * a / np.pi * np.arctan(1 / np.tan(2 * np.pi * f/2 * x + m)) + c
-    # a = amplitude, f = frequency, x = samples
 
     @staticmethod
     def equation_trigon(modulated):

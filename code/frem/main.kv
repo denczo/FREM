@@ -42,13 +42,6 @@
         orientation: 'vertical'
         size_hint: 1, 1
 
-
-
-
-#        size_hint_x: None
-#        size_hint_y: None
-#        width: self.parent.width
-#        height: self.parent.width/(16/9)
         #=======================================#
         #         LANDSCAPE ORIENTATION         #
         #=======================================#
@@ -516,4 +509,4 @@
                         font_size: self.width/15
                         text: '[b]PLAY[/b]'
                         orientation: 'horizontal'
-                        on_release: threading.Thread(target=root.play_result).start()
+                        on_release: app.init_thread()

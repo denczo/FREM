@@ -15,8 +15,9 @@
             spacing: 5
 
             Label:
-                text: 'Quality of rendered graph and audio. Higher settings can result in stuttering!'
+                text: '[b]Quality of rendered graph and audio[/b]\n\n[b]Hint:[/b] higher settings can result in audio stuttering'
                 markup: True
+                halign: 'center'
 
             Label:
                 text: '[b]Audio:[/b] '+ str(app.get_running_app().root.settings.sampling_rate) +'khz (Sampling Rate)\n[b]Graph:[/b] ' + str(app.get_running_app().root.settings.chunk_size)+ ' samples (points on graph)'
@@ -24,7 +25,7 @@
 
             ToggleButton:
                 id: 'settings_low'
-                text: 'Low'
+                text: 'Low '
                 group: 'settings'
                 state: app.get_running_app().root.settings.button_states[0]
                 on_press: app.get_running_app().root.audio_settings('Performance')
