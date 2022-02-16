@@ -151,12 +151,7 @@ class MainGrid(BoxLayout):
     #                                     "While analog synthesizer use physical components to generate the audio signal, digital synthesizer are doing this only with" \
     #                                     "mathematics and a digital computer chip. The vibrato effect can be realised mathematically by using frequency modulation." \
     #                                     "This App demonstrates it in an intuitive way and shows what else is possible with this concept."
-    # "To render a waveform with a " \
-    # "given frequency the amount of samples needs to be at least 2 times the frequency."\
-    # "If you would like to render a waveform with 20khz (20.000hz) which is the highest"\
-    # "frequency most people are able to hear, you would at least require 40.000 samples."\
-    # "Therefore in the music industry often a samplingrate of 44.1khz is used which " \
-    # "basically tells us that the audio is rendered with 44.100 samples per second." \
+
     @staticmethod
     def show_info():
         info = Info()  # Create a new instance of the P class

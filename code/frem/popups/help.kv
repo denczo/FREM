@@ -1,8 +1,11 @@
 <Info>:
     BoxLayout:
+        padding: 20,0,20,0
+
+
         BoxLayout:
-            size_hint: 0.1, 1.05
-            padding: 20
+            size_hint: 0.06, 1.05
+            padding: 0,5,5,0
 
             BoxLayout
                 orientation: 'vertical'
@@ -12,11 +15,12 @@
                     size_hint_y: None
                     height: self.width
                     text: "[b]X[/b]"
+                    font_size: 0.75*self.height
                     markup: True
                     on_release: root.popupWindow.dismiss()
 
                 BoxLayout:
-                    size_hint: 1, 1
+                    size_hint: 1, 0.05
 
                 ToggleButton:
                     text: '[b]I[/b]'
@@ -37,9 +41,13 @@
                     size_hint_y: None
                     on_release: root.ids.scrollbox.scroll_to(root.ids.marker, padding=root.height, animate=True)
 
+                BoxLayout:
+                    size_hint: 1, 1
+
+
         ScrollView:
             id: scrollbox
-            size_hint: 0.9, 1.05
+            size_hint: 0.88, 1.05
             pos_hint: {"x":0, "top":1.05}
             do_scroll_x: False
             spacing:110
@@ -52,6 +60,7 @@
                 orientation: 'vertical'
                 adaptive_height: True
                 height: self.minimum_height
+                padding: 10,0,0,0
 
                 BoxLayout:
                     id: intro

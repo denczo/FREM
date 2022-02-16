@@ -59,7 +59,7 @@
                 padding: 0,5,5,0
 
                 Button:
-                    text: '[i][b]i[/b][/i]'
+                    text: '[b]?[/b]'
                     markup: True
                     size_hint_y: None
                     height: self.width
@@ -76,7 +76,6 @@
                     spacing: 10
                     padding: 50, 50
 
-
                     Image:
                         source: 'logo/settings.png'
                         pos: self.parent.pos
@@ -84,14 +83,24 @@
                         keep_ratio: True
                         spacing: 100
 
+                BoxLayout:
+                    size_hint: 1, 0.1
+
+                Button:
+                    text: '[b]i[/b]'
+                    markup: True
+                    size_hint_y: None
+                    height: self.width
+                    font_size: 0.75*self.height
+                    #on_release: root.show_info()
 
 
-                RotatedImage:
-                    angle: 90
-                    source: 'logo/frem_logo_font.png'
-                    size_hint: 2, 2
-                    pos_hint: {"x":-0.5 , "y":0.0}
-                    opacity: 0.2
+#                RotatedImage:
+#                    angle: 90
+#                    source: 'logo/frem_logo_font.png'
+#                    size_hint: 2, 2
+#                    pos_hint: {"x":-0.5 , "y":0.0}
+#                    opacity: 0.2
 
 
             # modulation signal
@@ -100,7 +109,7 @@
                 do_scroll_x: True
                 do_scroll_y: False
                 orientation: 'vertical'
-                size_hint: 0.8, 1
+                size_hint: 0.88, 1
                 valign: 'middle'
                 bar_width: 4
                 bar_color: 1, 1, 1, 1

@@ -2,14 +2,21 @@ from pylatexenc.latex2text import LatexNodes2Text
 
 
 class InfoText:
-    part1 = "\n\n[b]Welcome to FREM [/b] \n\n[b]FREM[/b] is a tool to show how frequency modulation" \
-            " mathematically works which is also widely used in synthesizers (e.g. vibrato " \
-            "effect). For frequency modulation you will need at least two waveforms. One acts " \
+
+    part1 = "\n\n[b][size=20sp][u]I. Welcome to FREM [/u][/size][/b] \n\n[b]FREM[/b] is a tool to show how frequency modulation" \
+            " mathematically works. Where is frequency modulation used? Music of the 70s and 80s used lots of " \
+            "synthesizers which generate synthetic audio signals with all kind of effects. One of those is the vibrato " \
+            "effect. There are analog and digital synthesizers. While analog synthesizer use " \
+            "physical components to generate the audio signal, digital synthesizer are doing this only with" \
+            "mathematics and a digital computer chip. The vibrato effect can be realised mathematically by using " \
+            "frequency modulation. This App demonstrates it in an intuitive way and shows what else is possible " \
+            "with this concept."
+
+    part2 = "\n[b]How to use FREM?[/b]\n\n" \
+            "For frequency modulation you will need at least two waveforms. One acts " \
             "as [b]Modulating Wave[/b], the other one as [b]Carrier Wave[/b]. This tool provides " \
             "[b]three[/b] waveforms, which means two modulating waves can be applied on one " \
-            "carrier wave.\n"
-
-    part2 = "\n[b]How to use FREM?[/b]\n\nFor each waveform it can be switched " \
+            "carrier wave.\n[anchor=a] For each waveform it can be switched " \
             "between four types: [b]Sine[/b], [b]Sawtooth[/b], [b]Triangle[/b] and [b]Square[/b]." \
             " Each type has a different formula which will be shown and also can be visualized " \
             "(shown in fig 1.1). For a closer look you can also zoom in.\n"
@@ -31,7 +38,7 @@ class InfoText:
             "waveform needs to be calculated ([b] calculate F(x)[/b] ).\n\n[b]PLAY:[/b] plays " \
             "the carrier wave with it's applied modulation.\n"
 
-    part5 = "\n\n\n[b]Quick overview behind the maths[/b]" \
+    part5 = "\n\n\n[b][size=20sp][u]II. Quick overview behind the maths[/u][/size][/b]" \
             "\n\nThe maths behind frequency modulation works the same for all waveforms. Let's " \
             "take as example the sine wave. As already mentioned we need a carrier wave and " \
             "a modulation wave to do frequency modulation. Let's start with the formula " \
