@@ -1,0 +1,33 @@
+#:import webbrowser webbrowser
+#:import os os
+<Info>:
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'center'
+
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 5
+            size_hint: 0.25, 0.3
+
+            Button:
+                text: "Privacy Policy"
+                on_release:
+                    webbrowser.open('file://'+os.path.abspath("../frem/utils/privacy.html"), new=2)
+
+
+            Button:
+                text: "Legal Notice"
+                on_release:
+                    webbrowser.open('file://'+os.path.abspath("../frem/utils/imprint.html"), new=2)
+
+    AnchorLayout:
+        anchor_x: 'center'
+        anchor_y: 'bottom'
+        padding: 0, 5
+
+        Button:
+            size_hint: 0.25, 0.15
+            text: "Close"
+            font_size: self.height * .3
+            on_release: root.popupWindow.dismiss()

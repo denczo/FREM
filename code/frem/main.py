@@ -133,6 +133,12 @@ class MainGrid(BoxLayout):
         hint.popupWindow.open()
 
     @staticmethod
+    def show_info():
+        info = Info()
+        info.popupWindow = Popup(title="Info", content=info, separator_height=1, background_color=[0, 0, 0, 0.5])
+        info.popupWindow.open()
+
+    @staticmethod
     def show_warning_popup():
         warning = Warning()
         warning.popupWindow = Popup(title="Caution!", content=warning, separator_height=1,
@@ -146,24 +152,18 @@ class MainGrid(BoxLayout):
                                           background_color=[0, 0, 0, 0.5])
         settings_page.popupWindow.open()
 
-    # "Music of the 70s and 80s used lots of synthesizers which generate synthetic audio signals with all " \
-    #                                     "kind of effects. One of those is the vibrato effect which sounds like this. There are analog and digital synthesizers" \
-    #                                     "While analog synthesizer use physical components to generate the audio signal, digital synthesizer are doing this only with" \
-    #                                     "mathematics and a digital computer chip. The vibrato effect can be realised mathematically by using frequency modulation." \
-    #                                     "This App demonstrates it in an intuitive way and shows what else is possible with this concept."
-
     @staticmethod
-    def show_info():
-        info = Info()  # Create a new instance of the P class
+    def show_help():
+        help = Help()  # Create a new instance of the P class
         # info.popupWindow = Popup(title="Info", content=info, separator_height=1, background_color=[0, 0, 0, 0.5])
-        info.popupWindow = Popup(title="", content=info, separator_height=0, background_color=[0, 0, 0, 0.5])
+        help.popupWindow = Popup(title="", content=help, separator_height=0, background_color=[0, 0, 0, 0.5])
         # Create the popup window
-        info.popupWindow.open()  # show the popup
-        info.ids.infoText_p1.text = InfoText.part1
-        info.ids.infoText_p2.text = InfoText.part2
-        info.ids.infoText_p3.text = InfoText.part3
-        info.ids.infoText_p4.text = InfoText.part4
-        info.ids.infoText_p5.text = InfoText.part5
+        help.popupWindow.open()  # show the popup
+        help.ids.infoText_p1.text = InfoText.part1
+        help.ids.infoText_p2.text = InfoText.part2
+        help.ids.infoText_p3.text = InfoText.part3
+        help.ids.infoText_p4.text = InfoText.part4
+        help.ids.infoText_p5.text = InfoText.part5
 
     def init_max_min(self):
         for wf in self.wf_labels:
@@ -261,6 +261,10 @@ class MainGrid(BoxLayout):
                 wf_mod = wf_carrier.y * wf_carrier.mod_index
         if self.width > self.height:
             self.update_equations()
+
+
+class Help(FloatLayout):
+    pass
 
 
 class Info(FloatLayout):

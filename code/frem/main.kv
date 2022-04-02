@@ -5,6 +5,7 @@
 #:include popups/settings.kv
 #:include popups/hint.kv
 #:include popups/help.kv
+#:include popups/info.kv
 #:include popups/warning.kv
 
 <Button>:
@@ -30,7 +31,8 @@
 <MainGrid>:
     canvas.before:
         Color:
-            rgb: utils.get_color_from_hex('#212946')
+#            rgb: utils.get_color_from_hex('#212946')
+            rgb: utils.get_color_from_hex('#383838')
         Rectangle:
             pos: self.pos
             size: self.size
@@ -64,7 +66,7 @@
                     size_hint_y: None
                     height: self.width
                     font_size: 0.75*self.height
-                    on_release: root.show_info()
+                    on_release: root.show_help()
 
                 BoxLayout:
                     size_hint: 1, 0.1
@@ -92,7 +94,7 @@
                     size_hint_y: None
                     height: self.width
                     font_size: 0.75*self.height
-                    #on_release: root.show_info()
+                    on_release: root.show_info()
 
 
 #                RotatedImage:
@@ -163,8 +165,8 @@
             #background_color: (0,0,0,0.2)
             canvas.before:
                 Color:
-                    rgb: utils.get_color_from_hex('#202435')
-
+#                    rgb: utils.get_color_from_hex('#202435')
+                    rgb: utils.get_color_from_hex('#282828')
 #                    rgb: .1, .1, .1, 1
                 Rectangle:
                     pos: self.pos
