@@ -127,12 +127,12 @@ class AudioPlayer:
             chunk = self.get_bytes(chunk[:self.chunk_size])
             self.sample.write(chunk)
             self.pos += self.chunk_size
-            if not self.playing:
-                self.sample.stop()
+            #if not self.playing:
+                #self.sample.stop()
 
     def stop(self):
         self.playing = False
-        self.sample.stop()
+        #self.sample.stop()
         self.pos = 0
 
 

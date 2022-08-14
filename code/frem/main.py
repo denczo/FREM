@@ -11,6 +11,7 @@ from kivy.lang import Builder
 from kivy.uix.floatlayout import FloatLayout
 from kivy.config import ConfigParser
 from kivy.uix.popup import Popup
+from kivy.logger import Logger
 
 import configparser
 import threading
@@ -20,6 +21,8 @@ os.environ["KIVY_IMAGE"] = "pil,sdl2"
 # os.environ["KIVY_NO_CONSOLELOG"] = "1"
 kivy.require('2.0.0')
 
+# settings file
+SETTINGS = "./code/frem/config/settings.ini"
 
 # FREM
 class MainApp(App):
@@ -36,16 +39,23 @@ class MainApp(App):
         return self.app
 
     def init_thread(self):
-        self.playback_thread = threading.Thread(target=self.app.play_result)
+        self.playback_thread = threading.Thread(target=self.app.player.run)
         self.playback_thread.setDaemon(True)
         self.playback_thread.start()
+        print("Playback Thread", self.playback_thread.native_id, "started")
+        print("Main Thread", threading.main_thread().native_id)
 
-    def exit(self):
-        App.get_running_app().stop()
-        self.root_window.close()
+    def exit_thread(self):
+        self.playback_thread.join()
+        print("Playback Thread", self.playback_thread.native_id, "stopped")
+
+
+    # def exit(self):
+    #     App.get_running_app().stop()
+    #     self.root_window.close()
 
     def on_start(self):
-        self.config.read('./config/settings.ini')
+        self.config.read(SETTINGS)
         status = self.config.getint('settings', 'first_start')
         if status:
             self.app.show_info()
@@ -55,7 +65,8 @@ class MainApp(App):
 
     def read_config(self):
         try:
-            self.config.read('./config/settings.ini')
+            Logger.info("settings.ini: "+ "exists: "+str(os.path.exists(SETTINGS)))
+            self.config.read(SETTINGS)
             self.config.get('settings', 'first_start')
         except configparser.NoSectionError:
             self.config.add_section('settings')
@@ -88,7 +99,7 @@ class MainGrid(BoxLayout):
     def __init__(self, **kw):
         super(MainGrid, self).__init__(**kw)
         self.config = ConfigParser()
-        self.config.read('./config/settings.ini')
+        self.config.read(SETTINGS)
         self.settings = Settings.best_performance
         self.change_settings(self.config.get('settings', 'quality'))
         chunk_size = self.settings.chunk_size
@@ -230,11 +241,15 @@ class MainGrid(BoxLayout):
 
     def play_result(self):
         if self.ids.play.state == 'down':
+            print("PLAY")
             self.ids.play.text = '[b]STOP[/b]'
-            self.player.run()
+            App.get_running_app().init_thread()
         else:
+            print("STOP")
             self.ids.play.text = '[b]PLAY[/b]'
             self.player.stop()
+            App.get_running_app().exit_thread()
+
 
     def update_equations(self):
         self.ids.equ_wf_1.text = self.mod_wave_1.equation
