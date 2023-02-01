@@ -6,7 +6,10 @@ class Sawtooth:
     # a = amplitude, f = frequency, x = samples, c = constant
     @staticmethod
     def trigonometric(a, f, x, c=0, m=0):
-        return -2 * a / np.pi * np.arctan(1 / np.tan(2 * np.pi * f/2 * x + m)) + c
+        #TODO produces warning because divided by 0 at some point
+        result = np.arctan(1 / np.tan(2 * np.pi * f/2 * x + m))
+        # result = np.where(result != 0)
+        return -2 * a / np.pi * result + c
 
     @staticmethod
     def equation_trigon(modulated):

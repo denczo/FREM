@@ -1,3 +1,5 @@
+from concurrent.futures import process
+from multiprocessing import Event
 import numpy as np
 from kivy.event import EventDispatcher
 from kivy.properties import StringProperty
@@ -19,7 +21,7 @@ def running_sum(s, l):
 
 # normalize between -0.5 and 0.5
 def normalize(y):
-    return (y - y.min(axis=0)) / (y.max(axis=0) - y.min(axis=0)) - 0.5
+    return 2*(y - y.min(axis=0)) / (y.max(axis=0) - y.min(axis=0)) - 0.5
 
 
 def normalize_fixed(y, max, min):
@@ -82,6 +84,7 @@ class AudioPlayer:
         self.waveforms = waveforms
         self.chunks = []
         self.smoother = Smoother(self.fade_seq)
+        self.event = Event()
 
     def set_chunk(self, y):
         self.chunk = y
@@ -96,30 +99,60 @@ class AudioPlayer:
         # chunk is scaled and converted from float32 to int16 bytes
         return (chunk * 32767).astype('int16').tobytes()
         # return (chunk * 32767).astype('int8').tobytes()
+    
+    def render_wf(self, wf):
+        pass
+        # with multiprocessing.Pool(processes=3) as pool:
+            # print("HAKUNA MATATA")
+            #pool.map(self.test("foo"), self.waveforms)
+            #pool.map()
+            #pass
 
-    def render_audio(self, pos):
-
-        start = pos
-        end = pos + (self.chunk_size + self.fade_seq)
-
-        x_audio = np.arange(start, end) / self.rate
+    #TODO reduce amount of parameter and use starmap for 
+    # pool.starmap() to use multiple parameter
+    def helper_function(self, wf, wf_c, x_audio):
         wf_mod = 0
-        for wf in self.waveforms:
-            wf_c = wf.render_wf_audio(x_audio, wf_mod)
-            if isinstance(wf, ModulationWave) and wf.int_active:
-                wf_mod = wf_c * wf.mod_index
-            else:
-                wf_mod = 0
+        if isinstance(wf, ModulationWave) and wf.int_active:
+            wf_mod = wf_c * wf.mod_index
+        return wf.render_wf_audio(x_audio, wf_mod)
 
+    @staticmethod
+    def helper_proto(wf, pos):
+        x_audio = AudioPlayer.render_x_audio(pos, None, None)
+        wf_mod = 0
+        return wf.render_wf_audio(x_audio, wf_mod)
+        
+    def render_x_audio(self, pos):
+        start = pos
+        end = pos + self.chunk_size + self.fade_seq
+        return np.arange(start, end) / self.rate
+ 
+    def render_audio(self, pos):
+        x_audio = self.render_x_audio(pos)
+        wf_mod = 0
+        # starts with last active modulation wave
+        for wf in self.waveforms:
+            if isinstance(wf, ModulationWave) and wf.int_active:
+                wf_c = wf.render_wf_audio(x_audio, wf_mod)
+                wf_mod = wf_c * wf.mod_index
+            elif not isinstance(wf, ModulationWave):
+                wf_c = wf.render_wf_audio(x_audio, wf_mod)
+            else:
+                wf_c = np.zeros(len(x_audio))
         return wf_c
 
-    def run(self):
+    def run(self, event):
         self.sample = AudioSample()
         self.stream.add_sample(self.sample)
         self.sample.play()
-        self.playing = True
+        
+        # self.playing = self.event.is_set()
+        # self.playing = True
 
-        while self.playing:
+
+        # while self.playing:
+        while not event.is_set():
+            # print("IM PLAYING")
             # smoothing
             chunk = self.smoother.smooth_transition(self.render_audio(self.pos))
             self.smoother.buffer = chunk[-self.fade_seq:]
@@ -127,12 +160,19 @@ class AudioPlayer:
             chunk = self.get_bytes(chunk[:self.chunk_size])
             self.sample.write(chunk)
             self.pos += self.chunk_size
+            if event.is_set():
+                self.sample.stop()
+                print("STOPPED")
+           
             #if not self.playing:
                 #self.sample.stop()
 
+        print("IM NOT PLAYING")
+        
     def stop(self):
-        self.playing = False
-        #self.sample.stop()
+        # self.playing = False
+        # self.event.set()
+        self.sample.stop()
         self.pos = 0
 
 
@@ -182,7 +222,7 @@ class CarrierWave(EventDispatcher):
         self.waveform = waveform
         self.frequency = frequency
         self.mod_wave = 0
-
+        
         self.plot = []
         self.color = color
         self.init_plot(hex_to_rgb_array(color))

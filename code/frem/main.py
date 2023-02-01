@@ -1,3 +1,4 @@
+from functools import partial
 import kivy
 from kivy.uix.image import Image
 from kivy.app import App
@@ -12,7 +13,13 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.config import ConfigParser
 from kivy.uix.popup import Popup
 from kivy.logger import Logger
+from kivy.clock import Clock
+from multiprocessing import Pool
+import multiprocessing as mp
+import ctypes as c
+from kivy.logger import Logger, LOG_LEVELS
 
+Logger.setLevel(LOG_LEVELS["debug"])
 import configparser
 import threading
 import os
@@ -24,6 +31,29 @@ kivy.require('2.0.0')
 # settings file
 SETTINGS = "./code/frem/config/settings.ini"
 
+samples = 4096
+amount_graphs = 4
+total_samples = samples * amount_graphs
+shared_array = mp.Array(c.c_double, np.zeros(total_samples), lock=False)
+shared_array_np = np.ndarray(total_samples, dtype=c.c_double, buffer=shared_array)
+# frequencies
+shared_value_freq_carrier = mp.Value('i', 5)
+plot_x = np.linspace(0, 1, total_samples)
+carrier = CarrierWave('#00ff41', chunk_size=samples, frequency=4)
+
+
+def task():
+    # for one waveform
+    freq_carrier = 4
+    plot_y = carrier.render_wf()
+    array =  plot_y
+    np.copyto(shared_array_np, array)
+
+
+cpus = mp.cpu_count()
+pool = Pool(cpus)
+
+
 # FREM
 class MainApp(App):
 
@@ -32,22 +62,54 @@ class MainApp(App):
         self.config = ConfigParser()
         self.app = None
         self.playback_thread = None
+        self.playback_process = None
+        self.graph_process = None
+        
+        self.event = Event()
 
     def build(self):
         self.read_config()
         self.app = MainGrid()
         return self.app
 
+    def init_graph_process(self):
+        self.graph_process = Process(target=None)
+        # self.graph_process = Process(target=self.app.update_plot)
+        self.graph_process.daemon = True
+        self.graph_process.start()
+        print("Graph Process", self.graph_process.pid, "started")
+        # self.exit_graph_process()
+
+    def exit_graph_process(self):
+        print("Graph Process", self.graph_process.pid, "ended")
+        self.graph_process.join()
+
     def init_thread(self):
-        self.playback_thread = threading.Thread(target=self.app.player.run)
-        self.playback_thread.setDaemon(True)
-        self.playback_thread.start()
-        print("Playback Thread", self.playback_thread.native_id, "started")
+        
+        # self.playback_process = Process(target=self.app.player.run, args=(self.event,))
+        # self.playback_thread = threading.Thread(target=self.app.player.run)
+        # self.playback_thread.setDaemon(True)
+        self.playback_process.daemon = True
+        self.playback_process.start()
+        # print("Playback Thread", self.playback_thread.native_id, "started")
+        print("Playback Process", self.playback_process.pid, "started")
         print("Main Thread", threading.main_thread().native_id)
 
     def exit_thread(self):
-        self.playback_thread.join()
-        print("Playback Thread", self.playback_thread.native_id, "stopped")
+        self.event.set()
+        self.playback_process.kill()
+        self.playback_process.join()
+        
+        # self.playback_process.close()
+        # self.playback_process.join()
+        print("Playback Process", self.playback_process.pid, "stopped")
+        # print("Playback Thread", self.playback_thread.native_id, "stopped")
+
+    def init_process(self):
+        pass
+
+    def exit_process(self):
+        pass
 
 
     # def exit(self):
@@ -62,6 +124,10 @@ class MainApp(App):
             self.app.show_warning_popup()
             self.config.set('settings', 'first_start', 0)
             self.config.write()
+
+        # p = Process(target=test_method)
+        # p.start()
+        print("ON START")
 
     def read_config(self):
         try:
@@ -85,6 +151,37 @@ colors = [
 
 class RotatedImage(Image):
     angle = NumericProperty()
+
+class Visuals():
+    def __init__(self) -> None:
+        self.chunk_size = 1024
+        self.graph_max_x = self.chunk_size + 1
+        self.graph_min_x = 0
+        self.draw_border = False
+        # self.test = Queue()
+
+        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=self.chunk_size / 8, x_grid_label=True,
+                           border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 1],
+                           x_grid=True, y_grid=True, xmin=self.graph_min_x, xmax=self.graph_max_x, ymin=-0.55,
+                           ymax=0.56, draw_border=self.draw_border)
+
+    def test_method(self):
+        print("test")
+
+    def update_plot(self, wf_carrier):
+        print("UPDATE")
+        wf_y = wf_carrier.y
+        for j in range(len(wf_carrier.plot)):
+            print(len(wf_carrier.plot))
+            # self.graph.remove_plot(wf_carrier.plot[j])
+            if wf_carrier.graph_active:
+                print("YEAH", wf_carrier.plot[j].points)
+                self.test.put([(i, wf_y[i]) for i in range(self.chunk_size)])
+                wf_carrier.plot[j].points = [(i, wf_y[i]) for i in range(self.chunk_size)]
+                # self.test.put(wf_carrier.plot[j].points)
+                # print("UH", self.test.get())
+                # self.graph.add_plot(self.test.get())
+                self.graph.add_plot(wf_carrier.plot[j])
 
 
 class MainGrid(BoxLayout):
@@ -120,21 +217,26 @@ class MainGrid(BoxLayout):
         self.old_tab = ''
         self.equ_color = self.mod_wave_1.color
         self.player = AudioPlayer(1, self.rate, self.chunk_size, self.settings.fade_seq, self.waveforms)
-        self.graph_max_x = self.chunk_size + 1
-        self.graph_min_x = 0
-        self.graph = Graph(y_ticks_major=0.275, x_ticks_major=self.chunk_size / 8, x_grid_label=True,
-                           border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 1],
-                           x_grid=True, y_grid=True, xmin=self.graph_min_x, xmax=self.graph_max_x, ymin=-0.55,
-                           ymax=0.56, draw_border=self.draw_border)
+        # self.graph_max_x = self.chunk_size + 1
+        # self.graph_min_x = 0
+        # self.graph = Graph(y_ticks_major=0.275, x_ticks_major=self.chunk_size / 8, x_grid_label=True,
+        #                    border_color=[0, 1, 1, 1], tick_color=[0, 0, 0, 1],
+        #                    x_grid=True, y_grid=True, xmin=self.graph_min_x, xmax=self.graph_max_x, ymin=-0.55,
+        #                    ymax=0.56, draw_border=self.draw_border)
         self.plot_x = np.linspace(0, 1, self.chunk_size)
         self.plot_y = np.zeros(self.chunk_size)
+        
+        self.visuals = Visuals()
+        self.ids.modulation.add_widget(self.visuals.graph)
+        # self.visuals.update_plot(self.mod_wave_1)
+        # self.p = Process(target=partial(self.visuals.update_plot, self.mod_wave_1))
 
-        self.ids.modulation.add_widget(self.graph)
         self.formula = ''
         self.old_formula = ''
         self.lines = []
-        self.update_plot()
+        # self.update_plot()
         self.update_equations()
+        
 
     @staticmethod
     def show_hint():
@@ -182,12 +284,19 @@ class MainGrid(BoxLayout):
             self.max_minima[wf] = max_minima
 
     def update_zoom(self, value):
-        if value == '+' and self.zoom < 8:
-            self.zoom *= 2
-            self.graph.x_ticks_major /= 2
-        elif value == '-' and self.zoom > 1:
-            self.zoom /= 2
-            self.graph.x_ticks_major *= 2
+        # if value == '+' and self.zoom < 8:
+        #     self.zoom *= 2
+        #     self.graph.x_ticks_major /= 2
+        # elif value == '-' and self.zoom > 1:
+        #     self.zoom /= 2
+        #     self.graph.x_ticks_major *= 2
+        # self.p = Process(target=partial(self.visuals.update_plot, self.mod_wave_1))
+        # self.p = Process(target=self.visuals.test_method)
+        # self.p.daemon = True
+        # self.p.start()
+        # self.p.join()
+            # self.visuals.update_plot(self.mod_wave_1)
+        pass
 
     def audio_settings(self, value):
         self.config.set('settings', 'quality', value)
@@ -243,21 +352,23 @@ class MainGrid(BoxLayout):
         if self.ids.play.state == 'down':
             print("PLAY")
             self.ids.play.text = '[b]STOP[/b]'
+            # works with onpress event
+            #self.test()
+
             App.get_running_app().init_thread()
         else:
             print("STOP")
             self.ids.play.text = '[b]PLAY[/b]'
-            self.player.stop()
+            # self.player.stop()
             App.get_running_app().exit_thread()
-
 
     def update_equations(self):
         self.ids.equ_wf_1.text = self.mod_wave_1.equation
         self.ids.equ_wf_2.text = self.mod_wave_2.equation
         self.ids.equ_wf_3.text = self.carrier.equation
 
+    #TODO run in own thread/process
     def update_plot(self):
-
         wf_mod = 0
         for i in range(len(self.waveforms)):
             wf_carrier = self.waveforms[i]
@@ -267,16 +378,24 @@ class MainGrid(BoxLayout):
 
             self.update_equation()
             for j in range(len(wf_carrier.plot)):
-                self.graph.remove_plot(wf_carrier.plot[j])
+                # self.graph.remove_plot(wf_carrier.plot[j])
+                self.visuals.graph.remove_plot(wf_carrier.plot[j])
                 if wf_carrier.graph_active:
                     wf_carrier.plot[j].points = [(i, wf_y[i]) for i in range(self.chunk_size)]
-                    self.graph.add_plot(wf_carrier.plot[j])
+                    # self.graph.add_plot(wf_carrier.plot[j])
+                    self.visuals.graph.add_plot(wf_carrier.plot[j])
 
             if isinstance(wf_carrier, ModulationWave) and wf_carrier.int_active:
                 wf_mod = wf_carrier.y * wf_carrier.mod_index
         if self.width > self.height:
             self.update_equations()
 
+
+    def update_plot_multicore(self):
+        #mod = 0
+        print("multicore")
+        # pool.apply(task)
+        # self.plot.points = [(x, shared_array_np[x]) for x in range(self.samples)]
 
 class Help(FloatLayout):
     pass

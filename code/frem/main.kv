@@ -209,28 +209,29 @@
                             group: 'wf_m1'
                             orientation: 'horizontal'
                             state: 'down'
-                            on_press: root.update_plot()
+                            # on_press: root.update_plot_multicore()
+                            on_press: app.get_running_app().init_graph_process()
                             on_press: root.mod_wave_1.change_waveform('Sine')
 
                         ToggleButton:
                             text: 'Saw'
                             group: 'wf_m1'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            # on_press: root.update_plot_multicore()
                             on_press: root.mod_wave_1.change_waveform('Sawtooth')
 
                         ToggleButton:
                             text: 'Triangle'
                             group: 'wf_m1'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            # on_press: root.update_plot_multicore()
                             on_press: root.mod_wave_1.change_waveform('Triangle')
 
                         ToggleButton:
                             text: 'Square'
                             group: 'wf_m1'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            # on_press: root.update_plot_multicore()
                             on_press: root.mod_wave_1.change_waveform('Square Wave')
 
                     # parameter modulation signal
@@ -248,7 +249,7 @@
                             id: mod_1_visible
                             active: True
                             on_active: root.mod_wave_1.graph_active = mod_1_visible.active
-                            on_active: root.update_plot()
+                            on_active: root.update_plot_multicore()
 
                     BoxLayout:
                         size_hint: 1, 0.2
@@ -263,7 +264,7 @@
                         Switch:
                             id: m1_int_active
                             on_active: root.mod_wave_1.calculate_integral(m1_int_active.active)
-                            on_active: root.update_plot()
+                            on_active: root.update_plot_multicore()
 
 
                     BoxLayout:
@@ -281,7 +282,7 @@
                             value: 1
                             step: 0.125
                             on_value: root.mod_wave_1.change_frequency(m1_freq_mod.value)
-                            on_value: root.update_plot()
+                            on_value: root.update_plot_multicore()
 
                         Label:
                             text: 'Modulation Index: ' + str(round(float(m1_mod_index.value), 2))
@@ -294,7 +295,7 @@
                             step: 0.01
                             disabled: not(m1_int_active.active)
                             on_value: root.mod_wave_1.change_mod_index(m1_mod_index.value)
-                            on_value: root.update_plot()
+                            on_value: root.update_plot_multicore()
 
             #=======================================#
             #         TAB MOD WAVE 2 SIGNAL         #
@@ -330,14 +331,14 @@
                             text: 'Sine'
                             group: 'wf_m2'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            on_press: root.update_plot_multicore()
                             on_press: root.mod_wave_2.change_waveform('Sine')
 
                         ToggleButton:
                             text: 'Saw'
                             group: 'wf_m2'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            on_press: root.update_plot_multicore()
                             on_press: root.mod_wave_2.change_waveform('Sawtooth')
 
                         ToggleButton:
@@ -345,14 +346,14 @@
                             group: 'wf_m2'
                             state: 'down'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            on_press: root.update_plot_multicore()
                             on_press: root.mod_wave_2.change_waveform('Triangle')
 
                         ToggleButton:
                             text: 'Square'
                             group: 'wf_m2'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            on_press: root.update_plot_multicore()
                             on_press: root.mod_wave_2.change_waveform('Square Wave')
 
                     # parameter modulation signal
@@ -370,7 +371,7 @@
                             id: m2_mod_visible
                             active: True
                             on_active: root.mod_wave_2.graph_active = m2_mod_visible.active
-                            on_active: root.update_plot()
+                            on_active: root.update_plot_multicore()
 
                     BoxLayout:
                         size_hint: 1, 0.2
@@ -385,7 +386,7 @@
                         Switch:
                             id: m2_int_active
                             on_active: root.mod_wave_2.calculate_integral(m2_int_active.active)
-                            on_active: root.update_plot()
+                            on_active: root.update_plot_multicore()
 
                     BoxLayout:
                         size_hint: 1, 0.6
@@ -402,7 +403,7 @@
                             value: 2
                             step: 0.5
                             on_value: root.mod_wave_2.change_frequency(m2_freq_mod.value)
-                            on_value: root.update_plot()
+                            on_value: root.update_plot_multicore()
 
                         Label:
                             text: 'Modulation Index: ' + str(int(m2_mod_index.value))
@@ -415,7 +416,7 @@
                             step: 1
                             disabled: not(m2_int_active.active)
                             on_value: root.mod_wave_2.change_mod_index(m2_mod_index.value)
-                            on_value: root.update_plot()
+                            on_value: root.update_plot_multicore()
 
             #=======================================#
             #           TAB CARRIER SIGNAL          #
@@ -452,28 +453,28 @@
                             group: 'wf_carrier'
                             state: 'down'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            on_press: root.update_plot_multicore()
                             on_press: root.carrier.change_waveform('Sine')
 
                         ToggleButton:
                             text: 'Saw'
                             group: 'wf_carrier'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            on_press: root.update_plot_multicore()
                             on_press: root.carrier.change_waveform('Sawtooth')
 
                         ToggleButton:
                             text: 'Triangle'
                             group: 'wf_carrier'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            on_press: root.update_plot_multicore()
                             on_press: root.carrier.change_waveform('Triangle')
 
                         ToggleButton:
                             text: 'Square'
                             group: 'wf_carrier'
                             orientation: 'horizontal'
-                            on_press: root.update_plot()
+                            on_press: root.update_plot_multicore()
                             on_press: root.carrier.change_waveform('Square Wave')
 
                     # parameter
@@ -487,7 +488,7 @@
                         Switch:
                             id: car_visible
                             on_active: root.carrier.graph_active = car_visible.active
-                            on_active: root.update_plot()
+                            on_active: root.update_plot_multicore()
 
                     BoxLayout:
                         size_hint: 1, 0.2
@@ -508,7 +509,7 @@
                             disabled: not(car_visible.active)
                             step: 1
                             on_value: root.carrier.change_frequency(freq_car.value)
-                            on_value: root.update_plot()
+                            on_value: root.update_plot_multicore()
 
                     BoxLayout:
                         size_hint: 1, 0.1
