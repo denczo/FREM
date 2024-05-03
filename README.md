@@ -18,7 +18,7 @@ The Android app is built using Python 3 and the cross-platform Kivy Framework.
 
 <div align="center">
 
-[![IMAGE ALT TEXT HERE](./code/frem/utils/images/FremDemo.png)](https://youtu.be/q5mPqf3SMKY?t=319)
+[![IMAGE ALT TEXT HERE](./code/frem/utils/images/FremDemo.png)](https://youtu.be/q5mPqf3SMKY?t=434)
 </div>
 
 ## How to run it:
