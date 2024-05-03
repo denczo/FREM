@@ -14,6 +14,13 @@ The Android app is built using Python 3 and the cross-platform Kivy Framework.
 <img src="./code/frem/utils/images/FremSettings.png" alt="drawing" width="350"/>
 </p>
 
+## Demo
+
+<div align="center">
+
+[![IMAGE ALT TEXT HERE](./code/frem/utils/images/FremDemo.png)](https://youtu.be/q5mPqf3SMKY?t=319)
+</div>
+
 ## How to run it:
 
 The project has a **main.py** which simply needs to be executed. To build the .apk and run it on your Android device, you need to use the buildtool Buildozer. The project contains already a buildozer.spec file which is required for buildozer to build the .apk file. For more information please check out the following tutorial:
