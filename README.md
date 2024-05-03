@@ -2,16 +2,16 @@
 <img src="./code/frem/logo/frem_logo_font.png" alt="drawing" width="250"/>
 </p>
 
-FREM is an Android app that teaches about frequency modulation in an interactive way. Frequency Modulation has been used in music production for audio synthesis where it is refered as FM synthesis. An popular example is Yamaha's Synthesizer DX7 from 1980. FREM let the user manipulate different waveforms and each change is visualized in realtime.
+FREM is an Android app that teaches about frequency modulation in an interactive way. Frequency Modulation has been used in music production for audio synthesis where it is refered as FM synthesis. A popular example is Yamaha's Synthesizer DX7 from 1980. FREM let the user manipulate different waveforms and each change is visualized in realtime.
 The result is rendered and can be listened to. In a nutshell the user can learn how to create audio effects like sirenes with frequency modulation.
 The Android app is built using Python 3 and the cross-platform Kivy Framework. 
 
 <p align="center">
-<img src="./code/frem/utils/images/FremMod1.png" alt="drawing" width="300"/>
-<img src="./code/frem/utils/images/FremMod2.png" alt="drawing" width="300"/>
-<img src="./code/frem/utils/images/FremGuide2.png" alt="drawing" width="300"/>
-<img src="./code/frem/utils/images/FremGuide1.png" alt="drawing" width="300"/>
-<img src="./code/frem/utils/images/FremSettings.png" alt="drawing" width="300"/>
+<img src="./code/frem/utils/images/FremMod1.png" alt="drawing" width="350"/>
+<img src="./code/frem/utils/images/FremMod2.png" alt="drawing" width="350"/>
+<img src="./code/frem/utils/images/FremGuide2.png" alt="drawing" width="350"/>
+<img src="./code/frem/utils/images/FremGuide1.png" alt="drawing" width="350"/>
+<img src="./code/frem/utils/images/FremSettings.png" alt="drawing" width="350"/>
 </p>
 
 ## How to run it:
